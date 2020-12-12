@@ -1,22 +1,20 @@
 {
   "version": "2.0",
   "app_name": "covibot",
+  "autogen_policy": false,
   "stages": {
     "dev": {
       "autogen_policy": false,
       "manage_iam_role": false,
-      "iam_policy_file": "policy-dev.json",
-      "iam_role_arn": "arn:aws:iam::662025734289:role/eng-dev-ovibot-lambda-role-testing",
-      "tags": {
-        "name": "covibot",
-        "label": "development"
-      },
+      "iam_policy_file": "policy-dev2.json",
       "api_gateway_stage": "api",
       "lambda_functions": {
         "api_handler": {
+          "manage_iam_role": false,
+          "iam_role_arn": "arn:aws:iam::662025734289:role/eng-dev-ovibot-lambda-role-testing",
           "environment_variables": {
-            "test_env_var": "1",
-            "request_secret": "2"
+            "SQS_URL": "https://sqs.us-east-2.amazonaws.com/662025734289/testkiu",
+            "SQS_QUEUE_NAME": "testkiu"
           }
         },
         "start_callback": {
