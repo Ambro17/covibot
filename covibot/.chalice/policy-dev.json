@@ -14,6 +14,17 @@
       },
       {
         "Action": [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ],
+        "Resource": [
+          "arn:aws:sqs:*:*:*"
+        ],
+        "Effect": "Allow"
+      },
+      {
+        "Action": [
           "dynamodb:CreateTable",
           "dynamodb:DescribeTable",
           "dynamodb:PutItem",

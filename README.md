@@ -48,3 +48,14 @@ Package into terraform template
 cd covibot
 chalice package --pkg-format terraform terraform_artifact
 ```
+
+## Create SQS queue
+`aws sqs create-queue --queue-name queue-name`
+or follow the docs:
+https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-create-queue.html
+
+Then save the sqs url and queue name under env vars with your method of choice
+```bash
+export SQS_URL=full_url
+export SQS_QUEUE_NAME=lacola
+```

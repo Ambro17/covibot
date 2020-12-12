@@ -3,10 +3,10 @@
   "app_name": "covibot",
   "stages": {
     "dev": {
-      "autogen_policy": true,
+      "autogen_policy": false,
       "manage_iam_role": false,
       "iam_policy_file": "policy-dev.json",
-      "iam_role_arn": "arn:aws:iam::662025734289:role/ENG-Admin",
+      "iam_role_arn": "arn:aws:iam::662025734289:role/eng-dev-ovibot-lambda-role-testing",
       "tags": {
         "name": "covibot",
         "label": "development"
@@ -18,6 +18,11 @@
             "test_env_var": "1",
             "request_secret": "2"
           }
+        },
+        "start_callback": {
+          "manage_iam_role": false,
+          "iam_role_arn": "arn:aws:iam::662025734289:role/eng-dev-ovibot-lambda-role-testing",
+          "lambda_timeout": 30
         }
       }
     },
