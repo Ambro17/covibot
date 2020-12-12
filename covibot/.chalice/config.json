@@ -1,0 +1,26 @@
+{
+  "version": "2.0",
+  "app_name": "covibot",
+  "stages": {
+    "dev": {
+      "autogen_policy": true,
+      "manage_iam_role": false,
+      "iam_policy_file": "policy-dev.json",
+      "iam_role_arn": "arn:aws:iam::662025734289:role/ENG-Admin",
+      "tags": {
+        "name": "covibot",
+        "label": "development"
+      },
+      "api_gateway_stage": "api",
+      "lambda_functions": {
+        "api_handler": {
+          "environment_variables": {
+            "test_env_var": "1",
+            "request_secret": "2"
+          }
+        }
+      }
+    },
+    "prod": {}
+  }
+}
