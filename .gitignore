@@ -2,4 +2,4 @@ env/
 .vscode/
 *.py[cod]
 __pycache__/
-terraform_artifact/
+*.zip
