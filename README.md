@@ -4,11 +4,14 @@
 `awscli` installed.
 `python3.6+`
 
-## TODO
-- Dynamodb persistence
-- Reduce lambda role to minimum rights and persist data
+## Work Items
+- Add Dynamodb persistence
+- Reduce lambda role rights
 - Connect to slack. Adapt response to slack.
-
+- Populate dynamodb table
+- Implement `/reservar` & `/listar` Phase 1
+- Add tests
+- Implement `/reservar` Phase 2 with sections limit
 
 ## Install
 ```
