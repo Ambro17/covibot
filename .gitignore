@@ -1,6 +1,7 @@
 env/
 .env
 .vscode/
+.idea/
 *.py[cod]
 __pycache__/
 *.zip

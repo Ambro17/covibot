@@ -4,6 +4,12 @@
 `awscli` installed.
 `python3.6+`
 
+## TODO
+- Dynamodb persistence
+- Reduce lambda role to minimum rights and persist data
+- Connect to slack. Adapt response to slack.
+
+
 ## Install
 ```
 python3.7 -m venv env && source env/bin/activate
