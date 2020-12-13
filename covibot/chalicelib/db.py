@@ -24,7 +24,5 @@ class Repository(ABC):
         ...
 
 
-
-
 class DynamoDBPersistence(Repository):
     pass
