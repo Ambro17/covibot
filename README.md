@@ -7,11 +7,14 @@
 ## Work Items
 - [x] Add Dynamodb persistence
 - [ ] Connect to slack. Adapt response to slack.
-- [ ] Populate dynamodb table
 - [ ] Implement `/reservar` & `/listar` Phase 1
+- [ ] Validate slack request signature
+- [ ] Implement `/reservar` Phase 2 with sections limit
+
+Low priority
+- [ ] Populate dynamodb table
 - [ ] Reduce lambda role rights to minumum working version
 - [ ] Add tests
-- [ ] Implement `/reservar` Phase 2 with sections limit
 
 ## Install
 ```
