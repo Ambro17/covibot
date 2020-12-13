@@ -6,7 +6,7 @@
 
 ## Work Items
 - Add Dynamodb persistence
-- Reduce lambda role rights
+- Reduce lambda role rights to minumum working version
 - Connect to slack. Adapt response to slack.
 - Populate dynamodb table
 - Implement `/reservar` & `/listar` Phase 1
@@ -55,7 +55,7 @@ chalice delete
 Package into terraform template
 ```
 cd covibot
-chalice package --pkg-format terraform terraform_artifact
+chalice package --pkg-format terraform .build
 ```
 
 ## Create SQS queue

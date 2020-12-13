@@ -6,3 +6,6 @@ do:
 
 undo:
 	cd covibot && chalice delete && cd -
+
+terraform:
+	cd covibot && chalice package --pkg-format .build && cd -
