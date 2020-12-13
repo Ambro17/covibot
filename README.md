@@ -5,13 +5,13 @@
 `python3.6+`
 
 ## Work Items
-- Add Dynamodb persistence
-- Reduce lambda role rights to minumum working version
-- Connect to slack. Adapt response to slack.
-- Populate dynamodb table
-- Implement `/reservar` & `/listar` Phase 1
-- Add tests
-- Implement `/reservar` Phase 2 with sections limit
+- [x] Add Dynamodb persistence
+- [ ] Connect to slack. Adapt response to slack.
+- [ ] Populate dynamodb table
+- [ ] Implement `/reservar` & `/listar` Phase 1
+- [ ] Reduce lambda role rights to minumum working version
+- [ ] Add tests
+- [ ] Implement `/reservar` Phase 2 with sections limit
 
 ## Install
 ```
