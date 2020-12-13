@@ -3,6 +3,7 @@ import os
 
 from chalice import Chalice
 from chalicelib.bus import SQSBus
+from chalicelib.db import get_database, User
 from chalicelib.events import StartVMs
 
 # There's only one lambda created for all @app.route's
@@ -36,6 +37,16 @@ def task():
         return {'exception': repr(e), 'success': False}
 
     return {"success": True}
+
+
+@app.route("/db")
+def test_db():
+    db = get_database()
+    user: User = db.get_user(17)
+    return {
+        'success': True,
+        'user': user.username if user else 'Not Found'
+    }
 
 
 @app.on_sqs_message(queue=os.getenv('SQS_QUEUE_NAME'), name='start_callback')
