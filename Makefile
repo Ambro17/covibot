@@ -1,5 +1,8 @@
 auth:
-	aws-google-auth -u ${USER}@onapsis.com -I C019my1yt -S 837142051107 --ask-role -d 3600
+	aws-google-auth -u ${USER}@onapsis.com -I C019my1yt -S 837142051107 --ask-role --duration 3600 --profile 'default'
+
+install:
+	pip install -r requirements.txt
 
 do:
 	cd covibot && chalice deploy && cd -
