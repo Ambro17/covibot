@@ -1,2 +1,4 @@
 chalice
 aws-google-auth # To configure temporary access token with our restricted aws account via google sso
+slack_sdk
+python-dotenv

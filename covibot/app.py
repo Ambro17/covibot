@@ -1,20 +1,38 @@
-import logging
 import os
 
-from chalice import Chalice
 from chalicelib.bus import SQSBus
 from chalicelib.db import get_database, User
 from chalicelib.events import StartVMs
 
+from chalice import Chalice, Response
+from slack_sdk import WebClient as Slack
+from dotenv import load_dotenv
+
+
+load_dotenv('../.env')
 # There's only one lambda created for all @app.route's
 # See: https://aws.github.io/chalice/topics/configfile.html#lambda-specific-configuration
 app = Chalice(app_name="covibot-api")
-bus = SQSBus(os.getenv('SQS_URL', 'MissingSQSURLEnvVar'))
+bus = SQSBus(os.environ['SQS_URL'], os.environ['SQS_QUEUE_NAME'])
+slack = Slack(token=os.environ['SLACK_BOT_TOKEN'])
 
 
-@app.route("/", name='home')
+@app.route("/")
 def home():
     return {"success": True}
+
+
+@app.route("/slack")
+def slack_echo():
+    try:
+        response = slack.chat_postMessage(channel='#random', text="Hello world!")
+        print(response)
+        message = '✔️ Success!'
+    except Exception as e:
+        print(repr(e))
+        message = '❌ Error'
+
+    return Response(message, status_code=200)
 
 
 @app.route("/task", name='some_task', methods=['POST'])
@@ -49,7 +67,7 @@ def test_db():
     }
 
 
-@app.on_sqs_message(queue=os.getenv('SQS_QUEUE_NAME'), name='start_callback')
+@app.on_sqs_message(queue=bus.queue_name, name='start_callback')
 def execute_task(event):
     print("Event %r", event.to_dict())
     for record in event:
