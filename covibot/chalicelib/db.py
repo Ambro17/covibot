@@ -67,7 +67,14 @@ class Repository(ABC):
     def get_user(self, user_id) -> Optional[User]:
         ...
 
+    @abstractmethod
+    def get_user_by_username(self, username) -> Optional[User]:
+        ...
+
     def reservar(self) -> bool:
+        ...
+
+    def cancelar_reserva(self) -> bool:
         ...
 
     def list_reservas(self) -> List[Reserva]:
@@ -85,7 +92,23 @@ class DynamoDBPersistence(Repository):
         if not user:
             return
 
-        return User(user['user_id'], user.get('name', 'Unknown'))
+        return User(user['user_id'], user.get('username', 'Unknown'))
+
+    def get_user_by_username(self, username) -> Optional[User]:
+        data = self.dynamodb.scan(
+            TableName='users',
+            FilterExpression='Username = :username',
+            ExpressionAttributeValues={':username': username},
+        )
+        users = data.get('Items')
+        if not users:
+            return None
+
+        match = (
+            User(u['user_id'], u.get('username', 'Unknown'))
+            for u in users if u['username'] == username
+        )
+        return next(match, None)
 
 
 def get_database():

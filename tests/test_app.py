@@ -29,14 +29,21 @@ def test_start_callback(client):
 
 
 def test_reservar(client):
+    # When a user invokes /reservar
+    # Then it does the booking
+    # And it notifies the user
+    pass
+
+
+def test_reservar_invalid_day(client):
+    pass
+
+
+def test_reservar_limit_exceeded(client):
     pass
 
 
 def test_listar_reservas():
-    pass
-
-
-def test_cant_reservar_if_limit_exceeded():
     pass
 
 

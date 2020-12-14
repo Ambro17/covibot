@@ -6,7 +6,7 @@
 
 ## Work Items
 - [x] Add Dynamodb persistence
-- [ ] Connect to slack. Adapt response to slack.
+- [x] Connect to slack. Adapt response to slack.
 - [ ] Implement `/reservar` & `/listar` Phase 1
 - [ ] Validate slack request signature
 - [ ] Implement `/reservar` Phase 2 with sections limit
