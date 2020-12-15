@@ -10,9 +10,9 @@
             "environment_variables": {
                 "SQS_URL": "https://sqs.us-east-2.amazonaws.com/662025734289/testkiu",
                 "SQS_QUEUE_NAME": "testkiu",
-                "SLACK_BOT_TOKEN": "1",
-                "SLACK_SIGNING_SECRET": "2",
-                "TESTING": "1"
+                "SLACK_BOT_TOKEN": "$SBT",
+                "SLACK_SIGNING_SECRET": "$SSS",
+                "TESTING": "$TESTING"
             },
             "lambda_functions": {
                 "api_handler": {
