@@ -6,8 +6,13 @@ install:
 
 do:
 	cd covibot && \
+	# Replace secrets but save the unreplaced file as backup to avoid \
+	# Leaking secrets into source control \
 	python replace_secrets.py && \
 	chalice deploy && \
+	# Restore unreplaced file \
+	cp .chalice/config.json.bak .chalice/config.json && \
+	rm .chalice/config.json.bak && \
 	cd -
 
 undo:
