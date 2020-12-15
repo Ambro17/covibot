@@ -5,7 +5,10 @@ install:
 	pip install -r requirements.txt
 
 do:
-	cd covibot && chalice deploy && cd -
+	cd covibot && \
+	python replace_secrets.py && \
+	chalice deploy && \
+	cd -
 
 undo:
 	cd covibot && chalice delete && cd -

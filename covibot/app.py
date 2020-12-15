@@ -146,6 +146,6 @@ def test_db():
 
 @app.on_sqs_message(queue=bus.queue_name, name='start_callback')
 def execute_task(event):
-    print("Event %r", event.to_dict())
+    print("Event %r" % event.to_dict())
     for record in event:
         print("Message body: %s" % record.body)
