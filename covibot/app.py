@@ -29,8 +29,8 @@ class Config:
 config = Config(
     sqs_url=os.environ['SQS_URL'],
     sqs_queue_name=os.environ['SQS_QUEUE_NAME'],
-    slack_bot_token=os.environ['SQS_URL'],
-    slack_signing_secret=os.environ['SQS_URL'],
+    slack_bot_token=os.environ['SLACK_BOT_TOKEN'],
+    slack_signing_secret=os.environ['SLACK_SIGNING_SECRET'],
     testing=os.getenv('TESTING', False),
 )
 
@@ -77,7 +77,7 @@ def log_all_traffic(event, get_response):
     print('Finished processing event.')
 
     total = time.time() - start
-    print(f'Total Seconds: {total:2.f}')
+    print(f'Total Seconds: {total:.1f}')
     return response
 
 

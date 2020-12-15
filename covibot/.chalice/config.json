@@ -15,7 +15,7 @@
             "SQS_URL": "https://sqs.us-east-2.amazonaws.com/662025734289/testkiu",
             "SQS_QUEUE_NAME": "testkiu",
             "SLACK_BOT_TOKEN": "$TOKEN",
-            "SIGNING_SECRET": "$SIGNING_SECRET"
+            "SLACK_SIGNING_SECRET": "$SIGNING_SECRET"
           }
         },
         "start_callback": {
