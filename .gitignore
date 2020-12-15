@@ -1,5 +1,6 @@
 env/
 .env
+.envrc
 .vscode/
 .idea/
 *.py[cod]
