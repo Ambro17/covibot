@@ -19,3 +19,9 @@ undo:
 
 terraform:
 	cd covibot && chalice package --pkg-format .build && cd -
+
+secrets:
+	python covibot/replace_secrets.py
+
+unsecrets:
+	python covibot/replace_secrets.py unsecret

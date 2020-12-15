@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 
-chalice_config_path = Path(__name__).parent.absolute() / '.chalice'
+chalice_config_path = Path(__file__).parent.absolute() / '.chalice'
 config_path = chalice_config_path / 'config.json'
 
 
@@ -34,7 +34,7 @@ def dump_env_vars(config):
 
 
 def replace_config(config):
-    with open(Path('.chalice/config.json'), 'w+') as f:
+    with open(config_path, 'w+') as f:
         json.dump(config, f, indent=4, ensure_ascii=False)
 
 
