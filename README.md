@@ -5,13 +5,16 @@
 `python3.6+`
 
 ## Work Items
-- Add Dynamodb persistence
-- Reduce lambda role rights
-- Connect to slack. Adapt response to slack.
-- Populate dynamodb table
-- Implement `/reservar` & `/listar` Phase 1
-- Add tests
-- Implement `/reservar` Phase 2 with sections limit
+- [x] Add Dynamodb persistence
+- [x] Connect to slack. Adapt response to slack.
+- [ ] Validate slack request signature
+- [ ] Implement `/reservar` & `/listar` Phase 1
+- [ ] Implement `/reservar` Phase 2 with sections limit
+
+Low priority
+- [ ] Populate dynamodb table
+- [ ] Reduce lambda role rights to minumum working version
+- [ ] Add tests
 
 ## Install
 ```
@@ -55,7 +58,7 @@ chalice delete
 Package into terraform template
 ```
 cd covibot
-chalice package --pkg-format terraform terraform_artifact
+chalice package --pkg-format terraform .build
 ```
 
 ## Create SQS queue
@@ -68,3 +71,6 @@ Then save the sqs url and queue name under env vars with your method of choice
 export SQS_URL=full_url
 export SQS_QUEUE_NAME=lacola
 ```
+
+It is recommended to install `direnv` and create and `.envrc` file in order to automatically load
+environment variables when you enter the project. This effectively drops the necessity of python-dotenv

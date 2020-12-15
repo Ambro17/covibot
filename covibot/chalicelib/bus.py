@@ -12,9 +12,10 @@ class MessageBus(ABC):
 
 class SQSBus(MessageBus):
     """Send messages to aws SQS for async treatment"""
-    def __init__(self, queue: str):
+    def __init__(self, queue: str, name: str):
         self.client = boto3.client('sqs')
         self.queue = queue
+        self.queue_name = name
 
     def send(self, event: Event):
         print(f'Sending message {event.to_json()} to {self.queue}')
