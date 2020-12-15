@@ -6,10 +6,8 @@ from chalicelib.events import StartVMs
 
 from chalice import Chalice, Response
 from slack_sdk import WebClient as Slack
-from dotenv import load_dotenv
 
 
-load_dotenv('../.env')
 # There's only one lambda created for all @app.route's
 # See: https://aws.github.io/chalice/topics/configfile.html#lambda-specific-configuration
 app = Chalice(app_name="covibot-api")

@@ -7,8 +7,8 @@
 ## Work Items
 - [x] Add Dynamodb persistence
 - [x] Connect to slack. Adapt response to slack.
-- [ ] Implement `/reservar` & `/listar` Phase 1
 - [ ] Validate slack request signature
+- [ ] Implement `/reservar` & `/listar` Phase 1
 - [ ] Implement `/reservar` Phase 2 with sections limit
 
 Low priority
@@ -71,3 +71,6 @@ Then save the sqs url and queue name under env vars with your method of choice
 export SQS_URL=full_url
 export SQS_QUEUE_NAME=lacola
 ```
+
+It is recommended to install `direnv` and create and `.envrc` file in order to automatically load
+environment variables when you enter the project. This effectively drops the necessity of python-dotenv
