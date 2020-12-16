@@ -4,7 +4,8 @@ import os
 import time
 from dataclasses import dataclass
 
-from chalicelib.bus import SQSBus
+from chalicelib.reservas.api import reservar_dia
+from covibot.chalicelib.bus import SQSBus
 from chalicelib.db import get_database, User
 from chalicelib.events import StartVMs
 
@@ -99,17 +100,15 @@ def home():
     return {"success": True}
 
 
-@app.route("/slack")
-def slack_echo():
-    try:
-        response = slack.chat_postMessage(channel='#random', text="Hello world!")
-        print(response)
-        message = '✔️ Success!'
-    except Exception as e:
-        print(repr(e))
-        message = '❌ Error'
-
-    return Response(message, status_code=200)
+@app.route("/reservar")
+def reservar_handler():
+    user_id = '1'
+    dia_reserva = 'L' # o G1 o G2
+    ok = reservar_dia(user_id, dia_reserva)
+    if ok:
+        return Response(f'✔️ Reserva realizada para `{dia_reserva}`!', 200)
+    else:
+        return Response('❌ Error', 200)
 
 
 @app.route("/task", name='some_task', methods=['POST'])
@@ -134,6 +133,15 @@ def task():
     return {"success": True}
 
 
+@app.on_sqs_message(queue=bus.queue_name, name='start_callback')
+def execute_task(event):
+    print("Event %r" % event.to_dict())
+    for record in event:
+        print("Message body: %s" % record.body)
+
+    return True
+
+
 @app.route("/db")
 def test_db():
     db = get_database()
@@ -142,10 +150,3 @@ def test_db():
         'success': True,
         'user': user.username if user else 'Not Found'
     }
-
-
-@app.on_sqs_message(queue=bus.queue_name, name='start_callback')
-def execute_task(event):
-    print("Event %r" % event.to_dict())
-    for record in event:
-        print("Message body: %s" % record.body)

@@ -1,13 +1,18 @@
+"""
+E2E Tests using chalice Testing App.
+HTTP Calls replicating slack requests
+"""
 import json
 
 from chalice.test import Client
+
 from covibot.app import app
 import pytest
 
 
 @pytest.fixture
 def client():
-    with Client(app.app) as client:
+    with Client(app) as client:
         yield client
 
 
@@ -17,7 +22,7 @@ def test_index(client):
 
 
 def test_start_callback(client):
-    response = client.lambda_.invoke(
+    result = client.lambda_.invoke(
         "start_callback",
         client.events.generate_sqs_event(
             queue_name='testing',
@@ -26,13 +31,7 @@ def test_start_callback(client):
             ]
         )
     )
-
-
-def test_reservar(client):
-    # When a user invokes /reservar
-    # Then it does the booking
-    # And it notifies the user
-    pass
+    assert result.payload == True
 
 
 def test_reservar_invalid_day(client):

@@ -25,3 +25,6 @@ secrets:
 
 unsecrets:
 	python covibot/replace_secrets.py unsecret
+
+test:
+	PYTHONPATH=covibot python -m pytest

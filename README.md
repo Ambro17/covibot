@@ -11,6 +11,7 @@
 - [ ] Implement Local Development Workflow with ngrok instead of deploying every time
 - [ ] Implement `/reservar` & `/listar` Phase 1
 - [ ] Implement `/reservar` Phase 2 with sections limit
+- [ ] Implement user crud in a happy way to be flexible to policy changes
 
 Low priority
 - [ ] Populate dynamodb table

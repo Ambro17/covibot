@@ -60,6 +60,11 @@ class Reserva:
     name: str
     dia: str
 
+@dataclass
+class SolicitudReserva:
+    otorgada: bool
+    mensaje: str
+
 
 class Repository(ABC):
 
@@ -67,11 +72,7 @@ class Repository(ABC):
     def get_user(self, user_id) -> Optional[User]:
         ...
 
-    @abstractmethod
-    def get_user_by_username(self, username) -> Optional[User]:
-        ...
-
-    def reservar(self) -> bool:
+    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
         ...
 
     def cancelar_reserva(self) -> bool:
@@ -94,21 +95,15 @@ class DynamoDBPersistence(Repository):
 
         return User(user['user_id'], user.get('username', 'Unknown'))
 
-    def get_user_by_username(self, username) -> Optional[User]:
-        data = self.dynamodb.scan(
-            TableName='users',
-            FilterExpression='Username = :username',
-            ExpressionAttributeValues={':username': username},
-        )
-        users = data.get('Items')
-        if not users:
-            return None
+    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
+        return SolicitudReserva(True, 'TEST')
 
-        match = (
-            User(u['user_id'], u.get('username', 'Unknown'))
-            for u in users if u['username'] == username
-        )
-        return next(match, None)
+    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
+        return SolicitudReserva(True, 'TEST')
+
+    def reservar_semana(self, user_id: str) -> SolicitudReserva:
+        """Dado un usuario y su grupo, asignarle reserva para esa semana"""
+        return SolicitudReserva(True, 'Semana')
 
 
 def get_database():
