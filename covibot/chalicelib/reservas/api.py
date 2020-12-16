@@ -5,7 +5,7 @@ import datetime as dt
 from dataclasses import dataclass, field
 from typing import Literal, List
 
-from chalicelib.db import get_database, SolicitudReserva
+from chalicelib.db import get_database, SolicitudReserva, Reserva
 
 
 db = get_database()
@@ -64,7 +64,7 @@ def reservar_semana(db, user_id: str) -> SolicitudReservaSemanal:
         return SolicitudReservaSemanal(ok=False, message=f'Grupo Inválido: `{user.group!r}`')
 
     datekeys = get_date_keys(days)
-    reserva = db.reservar_dias(user_id, datekeys)
+    reserva = db.reservar_dias(user.username, datekeys)
     if reserva.otorgada:
         return SolicitudReservaSemanal(ok=True, message='✔️ Reserva Realizada', days=days)
     else:
@@ -96,8 +96,8 @@ def cancelar(user_id, dia):
     ok = db.cancelar_reserva(user_id, dia)
 
 
-def listar_reservas():
-    db.list_reservas()
+def listar_reservas(db) -> List[Reserva]:
+    return db.list_reservas()
 
 
 def admin_delete_reserva(user_id, dia):

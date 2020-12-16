@@ -74,11 +74,11 @@ class Repository(ABC):
         ...
 
     @abstractmethod
-    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
+    def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
         ...
 
     @abstractmethod
-    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
+    def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
         ...
 
     def cancelar_reserva(self) -> bool:
@@ -102,11 +102,11 @@ class DynamoDBPersistence(Repository):
         return User(user['user_id'], user.get('username', 'Unknown'))
 
 
-    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
+    def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
         return SolicitudReserva(True, 'MOCKED')
 
 
-    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
+    def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
         """Dado un usuario y su grupo, asignarle reserva para esa semana"""
         return SolicitudReserva(True, 'Semana')
 
@@ -124,16 +124,19 @@ class MemoryPersistence(Repository):
         else:
             return None
 
-    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
-        self.reservas.append((user_id, date))
+    def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
+        self.reservas.append(Reserva(username, date))
         return SolicitudReserva(True, 'Testing OK')
 
-    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
-        self.reservas.append(
-            (user_id, dates)
-        )
+    def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
+        self.reservas.extend([
+            Reserva(name=username, dia=dia)
+            for dia in dates
+        ])
         return SolicitudReserva(True, 'Testing OK')
 
+    def list_reservas(self) -> List[Reserva]:
+        return self.reservas
 
 def get_database():
     return DynamoDBPersistence(client=boto3.resource('dynamodb'))
