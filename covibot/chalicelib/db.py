@@ -66,6 +66,11 @@ class SolicitudReserva:
     otorgada: bool
     mensaje: str
 
+@dataclass
+class SolicitudCancelacion:
+    cancelada: bool
+    mensaje: str
+
 
 class Repository(ABC):
 
@@ -81,9 +86,11 @@ class Repository(ABC):
     def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
         ...
 
-    def cancelar_reserva(self) -> bool:
+    @abstractmethod
+    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
         ...
 
+    @abstractmethod
     def list_reservas(self) -> List[Reserva]:
         ...
 
@@ -108,11 +115,20 @@ class DynamoDBPersistence(Repository):
 
     def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
         """Dado un usuario y su grupo, asignarle reserva para esa semana"""
-        return SolicitudReserva(True, 'Semana')
+        return SolicitudReserva(True, 'MOCKED')
+
+
+    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
+        return SolicitudCancelacion(True, 'MOCKED')
+
+
+    def list_reservas(self) -> List[Reserva]:
+        return []
 
 
 class MemoryPersistence(Repository):
     """Interface used for testing"""
+
     def __init__(self, users: dict = None, reservas: list = None):
         self.users = users
         self.reservas = reservas or []
@@ -136,8 +152,15 @@ class MemoryPersistence(Repository):
 
         return SolicitudReserva(True, 'Testing OK')
 
+
+    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
+        self.reservas = [r for r in self.reservas if r.dia not in dates]
+        return SolicitudCancelacion(True, 'MOCKED')
+
+
     def list_reservas(self) -> List[Reserva]:
         return self.reservas
+
 
 def get_database():
     return DynamoDBPersistence(client=boto3.resource('dynamodb'))

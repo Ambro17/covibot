@@ -4,7 +4,13 @@ UT For Api Services
 from freezegun import freeze_time
 
 from chalicelib.db import MemoryPersistence, Reserva
-from chalicelib.reservas.api import reservar_semana, SolicitudReservaSemanal, listar_reservas
+from chalicelib.reservas.api import (
+    reservar_semana,
+    SolicitudReservaSemanal,
+    listar_reservas,
+    cancelar_reserva_semana,
+    CancelacionReservaSemanal,
+)
 
 
 @freeze_time('2020-01-11')
@@ -75,6 +81,7 @@ def test_list_reservas():
         Reserva(name='Golliat', dia='2020-02-19'),
     ]
 
+
 def test_reserve_twice_on_different_days():
     db = MemoryPersistence(
         users={
@@ -107,3 +114,23 @@ def test_reserve_twice_on_different_days():
         Reserva('Golliat', '2020-02-25'),  # Added later
         Reserva('Golliat', '2020-02-26'),  # Added later
     ]
+
+
+def test_cancelacion_removes_reserva():
+    db = MemoryPersistence(
+        users={
+            '1': dict(id='1', username='Someone', group='2'),
+        },
+    )
+
+    assert reservar_semana(db, '1') == SolicitudReservaSemanal(
+        ok=True,
+        message='✔️ Reserva Realizada',
+        days=['J', 'V'],
+    )
+    assert len(listar_reservas(db)) == 2
+    assert cancelar_reserva_semana(db, '1') == CancelacionReservaSemanal(
+        ok=True,
+        data='✔️ Reserva Cancelada',
+    )
+    assert len(listar_reservas(db)) == 0

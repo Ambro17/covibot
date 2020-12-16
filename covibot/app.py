@@ -82,6 +82,12 @@ def log_all_traffic(event, get_response):
     return response
 
 
+@app.middleware('http')
+def add_user_to_context(event, get_response):
+    # Add user to context somehow
+    return get_response(event)
+
+
 def verify_signature(request_body, timestamp, signature, signing_secret):
     """Verify the request signature of the request sent from Slack"""
     # Generate a new hash using the app's signing secret, the request timestamp and data
@@ -103,8 +109,9 @@ def home():
 @app.route("/reservar")
 def reservar_handler():
     user_id = '1'
-    dia_reserva = 'L' # o G1 o G2
-    ok = reservar_dia(user_id, dia_reserva)
+    dia_reserva = 'L'
+    db = get_database()
+    ok = reservar_dia(db, user_id, dia_reserva)
     if ok:
         return Response(f'✔️ Reserva realizada para `{dia_reserva}`!', 200)
     else:

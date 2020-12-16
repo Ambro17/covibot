@@ -14,6 +14,7 @@
 - [ ] Implement user crud in a happy way to be flexible to policy changes
 
 Low priority
+- [ ] Implement docker-compose with local dynamodb for e2e tests
 - [ ] Populate dynamodb table
 - [ ] Reduce lambda role rights to minumum working version
 - [ ] Add tests

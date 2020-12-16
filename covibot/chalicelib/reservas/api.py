@@ -3,7 +3,7 @@ Las reservas pueden ser por dia o por grupo de dias.
 """
 import datetime as dt
 from dataclasses import dataclass, field
-from typing import Literal, List
+from typing import Literal, List, Any
 
 from chalicelib.db import get_database, SolicitudReserva, Reserva
 
@@ -30,7 +30,7 @@ WEEKDAY_TO_NAME = {v: k for k, v in NAME_TO_WEEKDAY.items()}
 DIA = Literal['L', 'M', 'X', 'J', 'V']
 
 
-def reservar_dia(user_id: str, dia: DIA) -> SolicitudReserva:
+def reservar_dia(db, user_id: str, dia: DIA) -> SolicitudReserva:
     dia = dia.upper()
     if dia not in 'LMXJV'.split():
         return SolicitudReserva(otorgada=False, mensaje='El día debe ser uno de `L M X J V`')
@@ -91,9 +91,47 @@ def get_reserva_from_day(dia) -> dt.datetime:
     return today + dt.timedelta(days=days_until_reserva)
 
 
-def cancelar(user_id, dia):
+@dataclass
+class CancelacionReservaSemanal:
+    ok: bool
+    data: str
+
+
+def cancelar_reserva_semana(db, user_id) -> CancelacionReservaSemanal:
     # First validate the reserva is for her/himself
-    ok = db.cancelar_reserva(user_id, dia)
+    user = db.get_user(user_id)
+    if not user:
+        return CancelacionReservaSemanal(ok=False, data='❌ Usted no existe 👻')
+
+    resp = get_days_from_user_group(user.group)
+    if not resp.ok:
+        return CancelacionReservaSemanal(ok=False, data='❌ Usted no pertenece a ningún grupo')
+
+    dias = resp.data
+    datekeys = get_date_keys(dias)
+    cancelacion = db.cancelar_reserva_dias(datekeys)
+    if not cancelacion.cancelada:
+        return CancelacionReservaSemanal(ok=False, data='❌ Error al cancelar reserva')
+
+    return CancelacionReservaSemanal(ok=True, data='✔️ Reserva Cancelada')
+
+
+@dataclass
+class Check:
+    ok: bool
+    data: Any
+
+
+def get_days_from_user_group(user_group) -> Check:
+    days_per_group = {
+        '1': ['L', 'M', 'X'],
+        '2': ['J', 'V'],
+    }
+    days = days_per_group.get(user_group)
+    if not days:
+        return Check(ok=False, data=[])
+    else:
+        return Check(ok=True, data=days)
 
 
 def listar_reservas(db) -> List[Reserva]:
