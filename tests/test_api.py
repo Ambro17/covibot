@@ -48,7 +48,7 @@ def test_reservar():
     ]
 
 
-@freeze_time('2020-02-17')
+@freeze_time('2020-02-18')
 def test_list_reservas():
     testing_db = MemoryPersistence(
         users={
@@ -70,7 +70,40 @@ def test_list_reservas():
     assert listar_reservas(testing_db) == [
         Reserva(name='Someone', dia='2020-02-20'),
         Reserva(name='Someone', dia='2020-02-21'),
-        Reserva(name='Golliat', dia='2020-02-17'),
+        Reserva(name='Golliat', dia='2020-02-24'),  # Next week
         Reserva(name='Golliat', dia='2020-02-18'),
         Reserva(name='Golliat', dia='2020-02-19'),
+    ]
+
+def test_reserve_twice_on_different_days():
+    db = MemoryPersistence(
+        users={
+            '1': dict(id='1', username='Golliat', group='1'),
+        },
+    )
+    with freeze_time("2020-02-18"):
+        assert reservar_semana(db, '1') == SolicitudReservaSemanal(
+            ok=True,
+            message='✔️ Reserva Realizada',
+            days=['L', 'M', 'X'],
+        )
+        assert listar_reservas(db) == [
+            Reserva('Golliat', '2020-02-24'),
+            Reserva('Golliat', '2020-02-18'),
+            Reserva('Golliat', '2020-02-19'),
+        ]
+
+    with freeze_time("2020-02-23"):
+        assert reservar_semana(db, '1') == SolicitudReservaSemanal(
+            ok=True,
+            message='✔️ Reserva Realizada',
+            days=['L', 'M', 'X'],
+        )
+
+    assert listar_reservas(db) == [
+        Reserva('Golliat', '2020-02-24'),
+        Reserva('Golliat', '2020-02-18'),
+        Reserva('Golliat', '2020-02-19'),
+        Reserva('Golliat', '2020-02-25'),  # Added later
+        Reserva('Golliat', '2020-02-26'),  # Added later
     ]

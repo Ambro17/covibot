@@ -129,10 +129,11 @@ class MemoryPersistence(Repository):
         return SolicitudReserva(True, 'Testing OK')
 
     def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
-        self.reservas.extend([
-            Reserva(name=username, dia=dia)
-            for dia in dates
-        ])
+        for dia in dates:
+            reserva = Reserva(name=username, dia=dia)
+            if reserva not in self.reservas:
+                self.reservas.append(reserva)
+
         return SolicitudReserva(True, 'Testing OK')
 
     def list_reservas(self) -> List[Reserva]:
