@@ -4,6 +4,7 @@ UT For Api Services
 import pytest
 
 from chalice.test import Client
+from freezegun import freeze_time
 
 from chalicelib.db import MemoryPersistence
 from covibot.app import app
@@ -16,6 +17,7 @@ def client():
         yield client
 
 
+@freeze_time('2020-01-11')
 def test_reservar(client):
     INVALID_GROUP = '3'
     INVALID_USER = '-1'
@@ -47,3 +49,14 @@ def test_reservar(client):
         message="Grupo Inválido: `'3'`",
         days=[],
     )
+    assert testing_db.reservas == [
+        ('1', [
+            '2020-01-13',
+            '2020-01-14',
+            '2020-01-15',
+        ]),
+        ('2', [
+            '2020-01-16',
+            '2020-01-17',
+        ]),
+    ]
