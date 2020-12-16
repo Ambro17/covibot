@@ -5,9 +5,9 @@ import pytest
 
 from chalice.test import Client
 
+from chalicelib.db import MemoryPersistence
 from covibot.app import app
-from chalicelib.db import SolicitudReserva
-from chalicelib.reservas.api import reservar_dia
+from chalicelib.reservas.api import reservar_semana, SolicitudReservaSemanal
 
 
 @pytest.fixture
@@ -17,30 +17,33 @@ def client():
 
 
 def test_reservar(client):
-    assert reservar_dia('1', 'L').otorgada is True
-    assert reservar_dia('1', 'M').otorgada is True
-    assert reservar_dia('1', 'X').otorgada is True
-    assert reservar_dia('1', 'J').otorgada is True
-    assert reservar_dia('1', 'V').otorgada is True
+    INVALID_GROUP = '3'
+    INVALID_USER = '-1'
+    testing_db = MemoryPersistence(
+        users={
+            '1': dict(id='1', username='Someone', group='1'),
+            '2': dict(id='2', username='Name', group='2'),
+            '3': dict(id='3', username='El', group=INVALID_GROUP),
+        },
+    )
 
-    assert reservar_dia('1', 'S').otorgada is False
-    assert reservar_dia('1', 'S').mensaje is 'Sólo se puede reservar días laborales'
-    assert reservar_dia('1', 'D').otorgada is False
-    assert reservar_dia('1', 'D').mensaje is 'Sólo se puede reservar días laborales'
-
-    assert reservar_dia('1', 'W') == SolicitudReserva(
-        otorgada=False,
-        mensaje='`W` no es un día válido. Los días son `L M X J V`'
+    assert reservar_semana(testing_db, '1') == SolicitudReservaSemanal(
+        ok=True,
+        message='✔️ Reserva Realizada',
+        days=['L', 'M', 'X'],
     )
-    assert reservar_dia('1', 'L W') == SolicitudReserva(
-        otorgada=False,
-        mensaje='`L W` no es un día válido. Los días son `L M X J V`'
+    assert reservar_semana(testing_db, '2') == SolicitudReservaSemanal(
+        ok=True,
+        message='✔️ Reserva Realizada',
+        days=['J', 'V'],
     )
-    assert reservar_dia('1', 'L 0') == SolicitudReserva(
-        otorgada=False,
-        mensaje='`L 0` no es un día válido. Los días son `L M X J V`'
+    assert reservar_semana(testing_db, INVALID_USER) == SolicitudReservaSemanal(
+        ok=False,
+        message='❌ Usted no existe 👻',
+        days=[],
     )
-    # When a user invokes /reservar
-    # Then it does the booking
-    # And it notifies the user
-    pass
+    assert reservar_semana(testing_db, INVALID_GROUP) == SolicitudReservaSemanal(
+        ok=False,
+        message="Grupo Inválido: `'3'`",
+        days=[],
+    )

@@ -2,8 +2,8 @@
 Las reservas pueden ser por dia o por grupo de dias.
 """
 import datetime as dt
-from dataclasses import dataclass
-from typing import Literal
+from dataclasses import dataclass, field
+from typing import Literal, List
 
 from chalicelib.db import get_database, SolicitudReserva
 
@@ -47,46 +47,48 @@ def reservar_dia(user_id: str, dia: DIA) -> SolicitudReserva:
 class SolicitudReservaSemanal:
     ok: bool
     message: str
+    days: List[str] = field(default_factory=list)
 
 
-def reservar_semana(user_id: str) -> SolicitudReservaSemanal:
+def reservar_semana(db, user_id: str) -> SolicitudReservaSemanal:
     user = db.get_user(user_id)
-    group = user.get('group')
-    if not group:
-        return SolicitudReservaSemanal(ok=False, message='No tiene grupo asignado aún')
+    if not user:
+        return SolicitudReservaSemanal(ok=False, message='❌ Usted no existe 👻')
 
     days_per_group = {
         '1': ['L', 'M', 'X'],
         '2': ['J', 'V'],
     }
-    days = days_per_group[group]
+    days = days_per_group.get(user.group)
+    if not days:
+        return SolicitudReservaSemanal(ok=False, message=f'Grupo Inválido: `{user.group!r}`')
 
     datekeys = get_date_keys(days)
+    reserva = db.reservar_dias(user_id, datekeys)
+    if reserva.otorgada:
+        return SolicitudReservaSemanal(ok=True, message='✔️ Reserva Realizada', days=days)
+    else:
+        print(f'[ERROR] {reserva.mensaje}')
+        return SolicitudReservaSemanal(ok=False, message='❌ Hubo un error a realizar la reserva')
 
+
+def get_date_keys(days: List[str]):
+    """Given a list of human days (L M X) returns a str representing the date of the next day"""
+    dates = []
     for day in days:
-        date_key = get_date_keys(day)
-        reserva = db.reservar_dia(user_id, date_key)
-        print('Reserva: ', reserva)
+        reserva_date = get_reserva_from_day(day)
+        date_key = reserva_date.strftime('%Y-%m-%d')
+        dates.append(date_key)
 
-    return SolicitudReservaSemanal(ok=True, message='✔️ Reserva Realizada')
-
-
-def get_date_keys(day):
-    reserva_date = get_reserva_from_day(day)
-    date_key = reserva_date.strftime('%Y-%m-%d')
-    return date_key
+    return dates
 
 
-def get_reserva_from_day(dia):
+def get_reserva_from_day(dia) -> dt.datetime:
     # If reserva is for monday, get the isodate of next monday and use it as the key
     reserva_weekday: int = NAME_TO_WEEKDAY[dia]
     today = dt.datetime.today() # TODO: Localize to BsAs
-    return day_gap(today, reserva_weekday)
-
-
-def day_gap(date, day: int):
-    days_gap = (day - date.weekday()) % 7
-    return date + dt.timedelta(days=days_gap)
+    days_until_reserva = (reserva_weekday - today.weekday()) % 7
+    return today + dt.timedelta(days=days_until_reserva)
 
 
 def cancelar(user_id, dia):

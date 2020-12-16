@@ -52,6 +52,7 @@ def create_table(tablename):
 @dataclass
 class User:
     id: str
+    group: str
     username: str
 
 
@@ -72,7 +73,12 @@ class Repository(ABC):
     def get_user(self, user_id) -> Optional[User]:
         ...
 
+    @abstractmethod
     def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
+        ...
+
+    @abstractmethod
+    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
         ...
 
     def cancelar_reserva(self) -> bool:
@@ -95,15 +101,38 @@ class DynamoDBPersistence(Repository):
 
         return User(user['user_id'], user.get('username', 'Unknown'))
 
+
     def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
-        return SolicitudReserva(True, 'TEST')
+        return SolicitudReserva(True, 'MOCKED')
+
 
     def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
-        return SolicitudReserva(True, 'TEST')
-
-    def reservar_semana(self, user_id: str) -> SolicitudReserva:
         """Dado un usuario y su grupo, asignarle reserva para esa semana"""
         return SolicitudReserva(True, 'Semana')
+
+
+class MemoryPersistence(Repository):
+    """Interface used for testing"""
+    def __init__(self, users: dict = None, reservas: list = None):
+        self.users = users
+        self.reservas = reservas or []
+
+    def get_user(self, user_id) -> Optional[User]:
+        user = self.users.get(user_id)
+        if user:
+            return User(**self.users.get(user_id))
+        else:
+            return None
+
+    def reservar_dia(self, user_id: str, date: str) -> SolicitudReserva:
+        self.reservas.append((user_id, date))
+        return SolicitudReserva(True, 'Testing OK')
+
+    def reservar_dias(self, user_id: str, dates: List[str]) -> SolicitudReserva:
+        self.reservas.append(
+            (user_id, dates)
+        )
+        return SolicitudReserva(True, 'Testing OK')
 
 
 def get_database():
