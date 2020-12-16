@@ -21,19 +21,6 @@ def test_index(client):
     assert response.json_body == {'success': True}
 
 
-def test_start_callback(client):
-    result = client.lambda_.invoke(
-        "start_callback",
-        client.events.generate_sqs_event(
-            queue_name='testing',
-            message_bodies=[
-                json.dumps({'user_ids': [1], 'vms': []})
-            ]
-        )
-    )
-    assert result.payload == True
-
-
 def test_reservar_invalid_day(client):
     pass
 
