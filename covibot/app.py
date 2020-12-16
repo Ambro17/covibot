@@ -3,15 +3,15 @@ from functools import partial
 from chalice import Chalice, Response
 from slack_sdk import WebClient as Slack
 
-from covibot.chalicelib.bus import SQSBus
-from covibot.chalicelib.config import config
-from covibot.chalicelib.middlewares import (
+from chalicelib.bus import SQSBus
+from chalicelib.config import config
+from chalicelib.middlewares import (
     validate_request_comes_from_slack,
     log_all_traffic,
     add_user_to_context,
 )
-from covibot.chalicelib.db import get_database
-from covibot.chalicelib.reservas.api import reservar_dia, DIA
+from chalicelib.db import get_database
+from chalicelib.reservas.api import reservar_dia, DIA
 
 
 def init_app():
