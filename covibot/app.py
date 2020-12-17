@@ -1,4 +1,5 @@
-from functools import partial
+import logging
+from functools import partial, wraps
 
 from chalice import Chalice, Response
 from slack_sdk import WebClient as Slack
@@ -11,11 +12,12 @@ from chalicelib.middlewares import (
     add_user_to_context,
 )
 from chalicelib.db import get_database
-from chalicelib.reservas.api import reservar_dia, DIA
+from chalicelib.reservas.api import reservar_semana, cancelar_reserva_semana
 
 
-def init_app():
+def init_app(log_level=logging.DEBUG):
     app = Chalice(app_name="covibot-api")
+    app.log.setLevel(log_level)
 
     # Middlewares
     app.register_middleware(validate_request_comes_from_slack, 'http')
@@ -40,25 +42,27 @@ def home():
     return {"success": True}
 
 
-@app.route("/reservar")
+@app.route("/reservar", methods=['POST'])
 def reservar_handler():
-    args = app.current_request.json_body
-    if not args:
-        return JSONResponse('Missing application/json Content-Type', status_code=400)
+    user = app.current_request.user
+    db = app.current_request.db
 
-    db = get_database()
-
-    user_id = '1'
-    user = db.get_user(user_id)
-    if not user:
-        # Slack only return responses with status 200.
-        # So all messages directed to users should use it.
-        return Ok('Unable to find user')
-
-    dia_reserva: DIA = 'L'
-    reserva = reservar_dia(db, user_id, dia_reserva)
-    if reserva.otorgada:
-        return Ok(f'✔️ Reserva realizada para `{dia_reserva}`!')
+    reserva = reservar_semana(db, user.id)
+    if reserva.ok:
+        return Ok(f'✔️ Reserva realizada para `{reserva.days}`!')
     else:
-        print(reserva.mensaje)
-        return Ok('❌ La reserva no pudo ser realizada.')
+        return Ok(f'❌ La reserva no pudo ser realizada. Error: {reserva.message}')
+
+
+@app.route("/cancelar_reserva", methods=['POST'])
+def reservar_handler():
+    user = app.current_request.user
+    db = app.current_request.db
+
+    reserva = cancelar_reserva_semana(db, user.id)
+    if reserva.ok:
+        return Ok(f'✔️ Reserva realizada para `{reserva.data}`!')
+    else:
+        return Ok(f'❌ La reserva no pudo ser realizada. Error: {reserva.data}')
+
+

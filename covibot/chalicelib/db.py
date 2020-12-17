@@ -106,7 +106,7 @@ class DynamoDBPersistence(Repository):
         if not user:
             return
 
-        return User(user['user_id'], user.get('username', 'Unknown'))
+        return User(user['user_id'], user.get('group', 1), user.get('username', 'Unknown'))
 
 
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:

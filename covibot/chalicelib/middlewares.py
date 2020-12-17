@@ -2,8 +2,14 @@ import hashlib
 import hmac
 import os
 import time
+from functools import partial
 
 from chalice.app import Request, Response
+from chalicelib.db import get_database
+
+
+JSONResponse = partial(Response, headers={'Content-Type': 'application/json'})
+Ok = partial(JSONResponse, status_code=200)
 
 
 def validate_request_comes_from_slack(event: Request, get_response):
@@ -47,8 +53,24 @@ def log_all_traffic(event, get_response):
     return response
 
 
-def add_user_to_context(event, get_response):
+def add_user_to_context(event: Request, get_response):
     # Add user to context somehow
+    args = event.json_body
+    if not args:
+        return JSONResponse('Missing application/json Content-Type', status_code=400)
+
+    user_id = args.get('user_id')
+    db = get_database()
+    user = db.get_user(user_id)
+    if not user:
+        # Slack only return responses with status 200.
+        # So all messages directed to users should status 200.
+        return Ok(f'Unable to find user with id `{user_id!r}`')
+
+    # Attach user to request offset for easier access
+    event.user = user
+    event.db = get_database()
+
     return get_response(event)
 
 

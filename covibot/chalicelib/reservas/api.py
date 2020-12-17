@@ -32,8 +32,8 @@ DIA = Literal['L', 'M', 'X', 'J', 'V']
 
 def reservar_dia(db, user_id: str, dia: DIA) -> SolicitudReserva:
     dia = dia.upper()
-    if dia not in 'LMXJV'.split():
-        return SolicitudReserva(otorgada=False, mensaje='El día debe ser uno de `L M X J V`')
+    if dia not in 'LMXJV':
+        return SolicitudReserva(otorgada=False, mensaje=f'El día debe ser uno de `L M X J V`. No {dia}')
 
     reserva_date = get_reserva_from_day(dia)
     date_key = reserva_date.strftime('%Y-%m-%d')
@@ -56,15 +56,15 @@ def reservar_semana(db, user_id: str) -> SolicitudReservaSemanal:
         return SolicitudReservaSemanal(ok=False, message='❌ Usted no existe 👻')
 
     days_per_group = {
-        '1': ['L', 'M', 'X'],
-        '2': ['J', 'V'],
+        1: ['L', 'M', 'X'],
+        2: ['J', 'V'],
     }
     days = days_per_group.get(user.group)
     if not days:
         return SolicitudReservaSemanal(ok=False, message=f'Grupo Inválido: `{user.group!r}`')
 
     datekeys = get_date_keys(days)
-    reserva = db.reservar_dias(user.username, datekeys)
+    reserva = db.reservar_dias(user.username, datekeys)  # TODO: Don't reserve if it's already reserved.
     if reserva.otorgada:
         return SolicitudReservaSemanal(ok=True, message='✔️ Reserva Realizada', days=days)
     else:
