@@ -1,11 +1,11 @@
 import logging
-from functools import partial, wraps
+from functools import partial
 
 from chalice import Chalice, Response
 from slack_sdk import WebClient as Slack
 
 from chalicelib.bus import SQSBus
-from chalicelib.config import config
+from chalicelib.config import config, Config
 from chalicelib.middlewares import (
     validate_request_comes_from_slack,
     log_all_traffic,
@@ -15,9 +15,9 @@ from chalicelib.db import get_database
 from chalicelib.reservas.api import reservar_semana, cancelar_reserva_semana
 
 
-def init_app(log_level=logging.DEBUG):
+def init_app(config: Config):
     app = Chalice(app_name="covibot-api")
-    app.log.setLevel(log_level)
+    app.log.setLevel(config.log_level)
 
     # Middlewares
     app.register_middleware(validate_request_comes_from_slack, 'http')
@@ -31,7 +31,7 @@ def init_app(log_level=logging.DEBUG):
     return app
 
 
-app = init_app()
+app = init_app(config)
 
 JSONResponse = partial(Response, headers={'Content-Type': 'application/json'})
 Ok = partial(JSONResponse, status_code=200)
