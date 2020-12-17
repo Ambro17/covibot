@@ -55,6 +55,9 @@ def log_all_traffic(event, get_response):
 
 def add_user_to_context(event: Request, get_response):
     # Add user to context somehow
+    if event.method != 'POST':
+        return get_response(event)
+
     args = event.json_body
     if not args:
         return JSONResponse('Missing application/json Content-Type', status_code=400)
@@ -66,6 +69,12 @@ def add_user_to_context(event: Request, get_response):
         # Slack only return responses with status 200.
         # So all messages directed to users should status 200.
         return Ok(f'Unable to find user with id `{user_id!r}`')
+
+    if not user.group:
+        return Ok(f'User `{user_id!r}` has no current group assigned')
+
+    if user.group not in {1, 2}:
+        return Ok(f'Invalid group `{user.group!r}` for {user.id}')
 
     # Attach user to request offset for easier access
     event.user = user
