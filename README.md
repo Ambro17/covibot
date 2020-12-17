@@ -8,10 +8,13 @@
 - [x] Add Dynamodb persistence
 - [x] Connect to slack. Adapt response to slack.
 - [x] HTTP Middleware that logs and validates slack request signature
+- [ ] Implement Local Development Workflow with ngrok instead of deploying every time
 - [ ] Implement `/reservar` & `/listar` Phase 1
 - [ ] Implement `/reservar` Phase 2 with sections limit
+- [ ] Implement user crud in a happy way to be flexible to policy changes
 
 Low priority
+- [ ] Implement docker-compose with local dynamodb for e2e tests
 - [ ] Populate dynamodb table
 - [ ] Reduce lambda role rights to minumum working version
 - [ ] Add tests
@@ -74,3 +77,14 @@ export SQS_QUEUE_NAME=lacola
 
 It is recommended to install `direnv` and create and `.envrc` file in order to automatically load
 environment variables when you enter the project. This effectively drops the necessity of python-dotenv
+
+
+## View logs
+Api Handler logs
+```
+chalice logs
+```
+Tasks logs
+```
+chalice logs -n start_callback # or the task name function
+```
