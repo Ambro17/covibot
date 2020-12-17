@@ -52,7 +52,7 @@ def create_table(tablename):
 @dataclass
 class User:
     id: str
-    group: str
+    group: int
     username: str
 
 
