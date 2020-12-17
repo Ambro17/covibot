@@ -47,11 +47,11 @@ def reservar_handler():
     user = app.current_request.user
     db = app.current_request.db
 
-    reserva = reservar_semana(db, user.id)
+    reserva = reservar_semana(db, user)
     if reserva.ok:
-        return Ok(f'✔️ Reserva realizada para `{reserva.days}`!')
+        return Ok(reserva.data)
     else:
-        return Ok(f'❌ La reserva no pudo ser realizada. Error: {reserva.message}')
+        return Ok(reserva.data)
 
 
 @app.route("/cancelar_reserva", methods=['POST'])
@@ -59,10 +59,8 @@ def reservar_handler():
     user = app.current_request.user
     db = app.current_request.db
 
-    reserva = cancelar_reserva_semana(db, user.id)
+    reserva = cancelar_reserva_semana(db, user)
     if reserva.ok:
-        return Ok(f'✔️ Reserva realizada para `{reserva.data}`!')
+        return Ok(reserva.data)
     else:
-        return Ok(f'❌ La reserva no pudo ser realizada. Error: {reserva.data}')
-
-
+        return Ok(reserva.data)
