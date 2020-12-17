@@ -1,3 +1,16 @@
+"""
+Utility script to replace config.json environment values
+by their proper values without leaking into source control
+Usage:
+    On project root, run `make do`
+    If you invoke it manually, you have to first to call it a second time to unreplace the secrets
+
+    # Dump secrets for deploy:
+    python replace_secrets.py
+
+    # Delete secrets to avoid leaking into source control:
+    python replace_secrets.py --unreplace
+"""
 import json
 import os
 import sys

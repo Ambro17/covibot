@@ -126,3 +126,7 @@ def test_cancelacion_removes_reserva():
         data='✔️ Reserva Cancelada',
     )
     assert len(listar_reservas(db)) == 0
+
+
+def test_reservar_action_is_idempotent_doesnt_reserve_more_than_once():
+    pass

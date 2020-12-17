@@ -42,7 +42,8 @@ def get_dias_a_reservar(current_date: dt.date, group: int) -> List[dt.date]:
 
     future_dates = []
     for fwday in future_weekdays:
-        days_diff = (fwday - current_weekday) % 7  # 5 - 2 = 3; 1 - 2 = 1
+        # 3 % 7 = 3; -1 % 7 = 6, six days until day
+        days_diff = (fwday - current_weekday) % 7
         future_dates.append(current_date + dt.timedelta(days=days_diff))
 
     return future_dates
@@ -59,7 +60,6 @@ class CancelacionReservaSemanal:
 
 
 def cancelar_reserva_semana(db, user) -> CancelacionReservaSemanal:
-    # First validate the reserva is for her/himself
     dias_a_cancelar = get_dias_a_reservar(dt.date.today(), user.group)
     datekeys = get_dias_keys(dias_a_cancelar)
 

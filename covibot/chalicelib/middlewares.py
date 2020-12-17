@@ -13,8 +13,7 @@ Ok = partial(JSONResponse, status_code=200)
 
 
 def validate_request_comes_from_slack(event: Request, get_response):
-    # From the list above, because this is an ``http`` event
-    # type, we know that event will be of type ``chalice.Request``.
+    """To be used only as http middleware, as it expects a Request event"""
 
     if os.getenv('TESTING'):
         # Do not validate on testing environment
