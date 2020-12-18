@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import partial
 
 from chalice import Chalice, Response
@@ -11,7 +12,7 @@ from chalicelib.middlewares import (
     add_user_to_context,
 )
 from chalicelib.db import get_database
-from chalicelib.reservas.api import reservar_semana, cancelar_reserva_semana
+from chalicelib.reservas.api import reservar_semana, cancelar_reserva_semana, listar_reservas, listar_mis_reservas
 
 
 def init_app(config: Config):
@@ -63,3 +64,18 @@ def reservar_handler():
         return Ok(reserva.data)
     else:
         return Ok(reserva.data)
+
+
+@app.route("/listar_reservas", methods=['POST'])
+def reservar_handler():
+    db = app.current_request.db
+    reservas = listar_reservas(db)
+    return Ok(reservas.data)
+
+
+@app.route("/mis_reservas", methods=['POST'])
+def mis_reservar_handler():
+    db = app.current_request.db
+    user = app.current_request.user
+    reservas = listar_mis_reservas(db, user.username)
+    return Ok(reservas.data)

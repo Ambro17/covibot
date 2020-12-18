@@ -2,6 +2,7 @@
 Las reservas pueden ser por dia o por grupo de dias.
 """
 import datetime as dt
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import List
 
@@ -73,8 +74,43 @@ def cancelar_reserva_semana(db, user) -> CancelacionReservaSemanal:
     return CancelacionReservaSemanal(ok=True, data='✔️ Reserva Cancelada')
 
 
-def listar_reservas(db) -> List[Reserva]:
-    return db.list_reservas()
+@dataclass
+class ListadoReserva:
+    ok: bool
+    data: str
+
+def monospace(string):
+    return f'```\n{string}\n```'
+
+
+def listar_reservas(db) -> ListadoReserva:
+    reservas = db.list_reservas()
+    reservas_by_date = group_reservas_by_day(reservas)
+    message = format_reservas(reservas_by_date)
+    return ListadoReserva(ok=True, data=message)
+
+
+def format_reservas(reservas_by_date):
+    return monospace(
+        '\n'.join(
+            f"{date}\n\t{', '.join(names)}"
+            for date, names in reservas_by_date.items()
+        )
+    )
+
+
+def group_reservas_by_day(reservas):
+    reservas_by_date = defaultdict(list)
+    for r in reservas:
+        reservas_by_date[r.dia].append(r.name)
+    return reservas_by_date
+
+
+def listar_mis_reservas(db, username) -> ListadoReserva:
+    reservas = db.mis_reservas(username)
+    reservas_by_date = group_reservas_by_day(reservas)
+    message = format_reservas(reservas_by_date)
+    return ListadoReserva(ok=True, data=message)
 
 
 def admin_delete_reserva(user_id, dia):

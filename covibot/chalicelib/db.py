@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List, Optional
 
 import boto3
@@ -96,6 +97,10 @@ class Repository(ABC):
     def list_reservas(self) -> List[Reserva]:
         ...
 
+    @abstractmethod
+    def mis_reservas(self, username: str) -> List[Reserva]:
+        ...
+
 
 class DynamoDBPersistence(Repository):
 
@@ -169,9 +174,18 @@ class DynamoDBPersistence(Repository):
     def list_reservas(self) -> List[Reserva]:
         items = self.reservas.scan()['Items']
         return [
-            Reserva(name=reserva['name'], dia=item['date'])
+            Reserva(name=username, dia=item['date'])
             for item in items
-            for reserva in item.get('reservas', [])
+            for username in item.get('reservas', [])
+        ]
+
+
+    def mis_reservas(self, username: str) -> List[Reserva]:
+        all_reservas = self.list_reservas()
+        return [
+            reserva for reserva in all_reservas
+            if reserva.name == username and
+               datetime.strptime(reserva.dia, '%Y-%m-%d').date() >= datetime.now().date()
         ]
 
 
@@ -180,7 +194,7 @@ class MemoryPersistence(Repository):
 
     def __init__(self, users: dict = None, reservas: list = None):
         self.users = users
-        self.reservas = reservas or []
+        self.reservas: List[Reserva] = reservas or []
 
     def get_user(self, user_id) -> Optional[User]:
         user = self.users.get(user_id)
@@ -210,6 +224,8 @@ class MemoryPersistence(Repository):
     def list_reservas(self) -> List[Reserva]:
         return self.reservas
 
+    def mis_reservas(self, username: str) -> List[Reserva]:
+        return [x for x in self.reservas if x.name == username]
 
 def get_database():
     return DynamoDBPersistence(client=boto3.resource('dynamodb'))
