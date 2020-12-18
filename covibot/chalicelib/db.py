@@ -104,6 +104,8 @@ class Repository(ABC):
 
 class DynamoDBPersistence(Repository):
 
+    MAX_RESERVAS_PER_DAY = 5
+
     def __init__(self, client):
         self.dynamodb = client
         self.users = client.Table('users')
@@ -121,6 +123,13 @@ class DynamoDBPersistence(Repository):
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
         if not date:
             return SolicitudReserva(otorgada=False, mensaje='No se especificó el día a reservar')
+
+        # Check that day doesn't goes beyond the limit
+        if not self._hay_lugares_disponibles(date):
+            return SolicitudReserva(
+                otorgada=False,
+                mensaje=f'Se superó el número máximo de reservas para el día `{date}` ({self.MAX_RESERVAS_PER_DAY})'
+            )
 
         print(f'{username!r} - {date!r}')
         resp = self.reservas.update_item(
@@ -188,6 +197,13 @@ class DynamoDBPersistence(Repository):
                datetime.strptime(reserva.dia, '%Y-%m-%d').date() >= datetime.now().date()
         ]
 
+    def _hay_lugares_disponibles(self, date):
+        data = self.reservas.get_item(Key={'date': date})
+        date_reservas = data.get('Item')
+        if not date_reservas:
+            return True  # Si no hay reservas para esta fecha, hay lugares disponibles
+
+        return len(date_reservas.get('reservas', [])) >= self.MAX_RESERVAS_PER_DAY
 
 class MemoryPersistence(Repository):
     """Interface used for testing"""
