@@ -1,7 +1,8 @@
-# Covibot (Yes, really creative)
+# Covibot (Yes, i was inspired that day)
 
 ## Prerequisites
 `awscli` installed.
+
 `python3.6+`
 
 ## Work Items
@@ -9,14 +10,14 @@
 - [x] Connect to slack. Adapt response to slack.
 - [x] HTTP Middleware that logs and validates slack request signature
 - [x] Implement `/reservar` & `/cancelar` Phase 1
-- [ ] Implement `/ver_reservas`
+- [x] Implement `/mis_reservas` and `/list_reservas`
+- [ ] Implement max amount of reservas per day.
 - [ ] Implement user crud in a happy way to be flexible to policy changes
 - [ ] Implement Local Development Workflow with ngrok instead of deploying every time
-- [ ] Implement `/reservar` Phase 2 with sections limit
+- [ ] Implement `/reservar` Phase 2 with availability per sections
 
 Low priority
 - [ ] Implement docker-compose with local dynamodb for e2e tests
-- [ ] Populate dynamodb table
 - [ ] Reduce lambda role rights to minumum working version
 - [ ] Add tests
 
