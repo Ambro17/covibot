@@ -2,6 +2,9 @@ auth:
 	aws-google-auth -u ${USER}@onapsis.com -I C019my1yt -S 837142051107 --ask-role --duration 3600 --profile 'default' \
 	--save-failure-html
 
+authcheck:
+	aws sts get-caller-identity
+
 install:
 	pip install -r requirements.txt
 
