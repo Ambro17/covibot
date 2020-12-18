@@ -91,6 +91,9 @@ def listar_reservas(db) -> ListadoReserva:
 
 
 def format_reservas(reservas_by_date):
+    if not reservas_by_date:
+        return "No tenés ninguna reserva aún"
+
     return monospace(
         '\n'.join(
             f"{date}\n\t{', '.join(names)}"

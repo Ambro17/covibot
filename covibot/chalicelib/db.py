@@ -155,7 +155,7 @@ class DynamoDBPersistence(Repository):
     def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
         for date in dates:
             resp = self.reservas.update_item(
-                Key={'date': {'S': date}},
+                Key={'date': date},
                 UpdateExpression="DELETE reservas :r",
                 ExpressionAttributeValues={
                     ':r': {username},
