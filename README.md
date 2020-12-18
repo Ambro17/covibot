@@ -8,10 +8,11 @@
 - [x] Add Dynamodb persistence
 - [x] Connect to slack. Adapt response to slack.
 - [x] HTTP Middleware that logs and validates slack request signature
-- [ ] Implement Local Development Workflow with ngrok instead of deploying every time
-- [ ] Implement `/reservar` & `/listar` Phase 1
-- [ ] Implement `/reservar` Phase 2 with sections limit
+- [x] Implement `/reservar` & `/cancelar` Phase 1
+- [ ] Implement `/ver_reservas`
 - [ ] Implement user crud in a happy way to be flexible to policy changes
+- [ ] Implement Local Development Workflow with ngrok instead of deploying every time
+- [ ] Implement `/reservar` Phase 2 with sections limit
 
 Low priority
 - [ ] Implement docker-compose with local dynamodb for e2e tests

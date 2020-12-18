@@ -36,10 +36,8 @@ def test_reservar():
         data="✔️ Reserva Realizada para los días:\n `['2020-01-16', '2020-01-17']`",
     )
     with pytest.raises(KeyError, match='3'):
-        assert reservar_semana(testing_db, badgroupuser) == SolicitudReservaSemanal(
-            ok=False,
-            data='',
-        )
+        assert reservar_semana(testing_db, badgroupuser)
+
     assert testing_db.reservas == [
         Reserva('Someone', '2020-01-13'),
         Reserva('Someone', '2020-01-14'),
@@ -108,6 +106,7 @@ def test_reserve_twice_on_different_days():
     ]
 
 
+@freeze_time('2020-12-16')
 def test_cancelacion_removes_reserva():
     auser = User(id='1', username='Someone', group=2)
     db = MemoryPersistence(
@@ -128,5 +127,9 @@ def test_cancelacion_removes_reserva():
     assert len(listar_reservas(db)) == 0
 
 
-def test_reservar_action_is_idempotent_doesnt_reserve_more_than_once():
+def test_reservar_doesnt_reserve_more_than_once():
+    pass
+
+
+def test_cancelar_is_a_noop_if_it_doesnt_exist():
     pass

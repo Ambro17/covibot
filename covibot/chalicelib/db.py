@@ -61,10 +61,12 @@ class Reserva:
     name: str
     dia: str
 
+
 @dataclass
 class SolicitudReserva:
     otorgada: bool
     mensaje: str
+
 
 @dataclass
 class SolicitudCancelacion:
@@ -87,7 +89,7 @@ class Repository(ABC):
         ...
 
     @abstractmethod
-    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
+    def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
         ...
 
     @abstractmethod
@@ -99,9 +101,11 @@ class DynamoDBPersistence(Repository):
 
     def __init__(self, client):
         self.dynamodb = client
+        self.users = client.Table('users')
+        self.reservas = client.Table('reservas')
 
     def get_user(self, user_id) -> Optional[User]:
-        data = self.dynamodb.Table('users').get_item(Key={'user_id': str(user_id)})
+        data = self.users.get_item(Key={'user_id': str(user_id)})
         user = data.get('Item')
         if not user:
             return
@@ -110,20 +114,64 @@ class DynamoDBPersistence(Repository):
 
 
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
-        return SolicitudReserva(True, 'MOCKED')
+        if not date:
+            return SolicitudReserva(otorgada=False, mensaje='No se especificó el día a reservar')
+
+        resp = self.reservas.update_item(
+            Key={'date': {'S': date}},
+            UpdateExpression="ADD reservas :r",
+            ExpressionAttributeValues={
+                ':r': {username},
+            },
+            ReturnValues='ALL_NEW',
+        )
+        if not resp.get('Attributes', {}).get('reservas'):
+            print(f'[ERROR] {resp!r}')
+            return SolicitudReserva(otorgada=False, mensaje='Error realizando la reserva.')
+
+        return SolicitudReserva(True, f'Se reservó el día `{date}` para {username}')
 
 
     def reservar_dias(self, username: str, dates: List[str]) -> SolicitudReserva:
         """Dado un usuario y su grupo, asignarle reserva para esa semana"""
-        return SolicitudReserva(True, 'MOCKED')
+        if not dates:
+            return SolicitudReserva(otorgada=False, mensaje='No se especificaron los días a reservar')
+
+        for date in dates:
+            resp = self.reservar_dia(username, date)
+
+        if not resp.otorgada:
+            return SolicitudReserva(otorgada=False, mensaje='Error realizando la reserva.')
+
+        return SolicitudReserva(True, f'Se reservaron los dias `{dates}` para {username}')
 
 
-    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
-        return SolicitudCancelacion(True, 'MOCKED')
+    def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
+        for date in dates:
+            resp = self.reservas.update_item(
+                Key={'date': {'S': date}},
+                UpdateExpression="DELETE reservas :r",
+                ExpressionAttributeValues={
+                    ':r': {username},
+                },
+                ReturnValues='ALL_NEW',
+            )
+            if not resp.get('Attributes'):
+                # Reservas are allowed to be empty after cancellation
+                # But Attributes must be returned if the operation was successfull
+                print(f'[ERROR] {resp!r}')
+                return SolicitudCancelacion(cancelada=False, mensaje='Error cancelando la reserva.')
+
+        return SolicitudCancelacion(cancelada=True, mensaje='La reserva fue cancelada.')
 
 
     def list_reservas(self) -> List[Reserva]:
-        return []
+        items = self.reservas.scan()['Items']
+        return [
+            Reserva(name=reserva['name'], dia=item['date'])
+            for item in items
+            for reserva in item.get('reservas', [])
+        ]
 
 
 class MemoryPersistence(Repository):
@@ -153,7 +201,7 @@ class MemoryPersistence(Repository):
         return SolicitudReserva(True, 'Testing OK')
 
 
-    def cancelar_reserva_dias(self, dates: List[str]) -> SolicitudCancelacion:
+    def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
         self.reservas = [r for r in self.reservas if r.dia not in dates]
         return SolicitudCancelacion(True, 'MOCKED')
 

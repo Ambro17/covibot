@@ -1,4 +1,3 @@
-import logging
 from functools import partial
 
 from chalice import Chalice, Response
@@ -24,7 +23,7 @@ def init_app(config: Config):
     app.register_middleware(add_user_to_context, 'http')
     app.register_middleware(log_all_traffic, 'all')
 
-    app.db  = get_database()
+    app.db = get_database()
     app.bus = SQSBus(queue=config.sqs_url, name=config.sqs_queue_name)
     app.slack = Slack(token=config.slack_bot_token)
 

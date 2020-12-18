@@ -63,7 +63,7 @@ def cancelar_reserva_semana(db, user) -> CancelacionReservaSemanal:
     dias_a_cancelar = get_dias_a_reservar(dt.date.today(), user.group)
     datekeys = get_dias_keys(dias_a_cancelar)
 
-    cancelacion = db.cancelar_reserva_dias(datekeys)
+    cancelacion = db.cancelar_reserva_dias(user.username, datekeys)
     if not cancelacion.cancelada:
         print(f'[ERROR] {cancelacion.mensaje}')
         return CancelacionReservaSemanal(ok=False, data='❌ Error al cancelar reserva')
