@@ -110,15 +110,16 @@ class DynamoDBPersistence(Repository):
         if not user:
             return
 
-        return User(user['user_id'], user.get('group', 1), user.get('username', 'Unknown'))
+        return User(user['user_id'], user.get('group', 1), user.get('name', 'Unknown'))
 
 
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
         if not date:
             return SolicitudReserva(otorgada=False, mensaje='No se especificó el día a reservar')
 
+        print(f'{username!r} - {date!r}')
         resp = self.reservas.update_item(
-            Key={'date': {'S': date}},
+            Key={'date': date},
             UpdateExpression="ADD reservas :r",
             ExpressionAttributeValues={
                 ':r': {username},

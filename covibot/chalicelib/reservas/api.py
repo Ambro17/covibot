@@ -19,7 +19,9 @@ class SolicitudReservaSemanal:
 def reservar_semana(db, user: User) -> SolicitudReservaSemanal:
     dias_a_reservar = get_dias_a_reservar(dt.date.today(), user.group)
     datekeys = get_dias_keys(dias_a_reservar)
-    reserva = db.reservar_dias(user.username, datekeys)  # TODO: Don't reserve if it's already reserved.
+
+    print(f'Reservando semana para {user}, Dias: {datekeys}')
+    reserva = db.reservar_dias(user.username, datekeys)
     if not reserva.otorgada:
         print(f'[ERROR] {reserva.mensaje}')
         return SolicitudReservaSemanal(ok=False, data='❌ Hubo un error al intentar realizar la reserva')
