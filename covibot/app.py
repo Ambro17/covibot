@@ -53,8 +53,7 @@ def home():
 @slack_command("/reservar")
 def reservar_handler():
     user = app.current_request.user
-    db = app.db
-    reserva = reservar_semana(db, user)
+    reserva = reservar_semana(app.db, user)
     if reserva.ok:
         return Ok(reserva.data)
     else:
