@@ -104,7 +104,7 @@ class Repository(ABC):
 
 class DynamoDBPersistence(Repository):
 
-    MAX_RESERVAS_PER_DAY = 5
+    MAX_RESERVAS_PER_DAY = 70
 
     def __init__(self, client):
         self.dynamodb = client
@@ -121,6 +121,7 @@ class DynamoDBPersistence(Repository):
 
 
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
+        breakpoint()
         if not date:
             return SolicitudReserva(otorgada=False, mensaje='No se especificó el día a reservar')
 
@@ -154,9 +155,8 @@ class DynamoDBPersistence(Repository):
 
         for date in dates:
             resp = self.reservar_dia(username, date)
-
-        if not resp.otorgada:
-            return SolicitudReserva(otorgada=False, mensaje='Error realizando la reserva.')
+            if not resp.otorgada:
+                return SolicitudReserva(otorgada=False, mensaje=resp.mensaje)
 
         return SolicitudReserva(True, f'Se reservaron los dias `{dates}` para {username}')
 
@@ -203,7 +203,7 @@ class DynamoDBPersistence(Repository):
         if not date_reservas:
             return True  # Si no hay reservas para esta fecha, hay lugares disponibles
 
-        return len(date_reservas.get('reservas', [])) >= self.MAX_RESERVAS_PER_DAY
+        return len(date_reservas.get('reservas', [])) <= self.MAX_RESERVAS_PER_DAY
 
 class MemoryPersistence(Repository):
     """Interface used for testing"""
