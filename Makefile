@@ -36,3 +36,23 @@ unsecrets:
 
 test:
 	PYTHONPATH=covibot python -m pytest
+
+build:
+	docker build covibot -t covibot
+
+run: build
+	docker run \
+	-it \
+	--volume ~/.aws/credentials:/home/root/.aws/credentials \
+	-p 5000:5000 \
+	--rm \
+	covibot
+
+run-shell:
+	docker run \
+	-it \
+	--volume ~/.aws/credentials:/home/root/.aws/credentials \
+	--rm \
+	-p 5000:5000\
+	covibot \
+	/bin/bash
