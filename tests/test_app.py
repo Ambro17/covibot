@@ -2,8 +2,6 @@
 E2E Tests using chalice Testing App.
 HTTP Calls replicating slack requests
 """
-import json
-
 from chalice.test import Client
 
 from covibot.app import app
