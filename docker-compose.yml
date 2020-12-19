@@ -14,7 +14,15 @@ services:
     image: covibot
     container_name: covibot
     ports:
-     - "5000:5000"
+     - "0.0.0.0:5000:5000"
     environment:
       AWS_ACCESS_KEY_ID: 'NOTREAL'
       AWS_SECRET_ACCESS_KEY: 'NOTREAL'
+  ngrok:
+    image: wernight/ngrok
+    container_name: ngrok
+    ports:
+      - "0.0.0.0:4040:4040"
+    command: "ngrok http covibot:5000 -log stdout"
+    depends_on:
+      - covibot
