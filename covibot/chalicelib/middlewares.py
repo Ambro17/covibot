@@ -3,6 +3,7 @@ import hmac
 import os
 import time
 from functools import partial
+from urllib.parse import parse_qsl
 
 from chalice.app import Request, Response
 from chalicelib.db import get_database
@@ -56,12 +57,18 @@ def add_user_to_context(event: Request, get_response):
     # Add user to context somehow
     if event.method != 'POST':
         return get_response(event)
+    if 'application/x-www-form-urlencoded' not in event.headers.get('Content-Type', ''):
+        return JSONResponse("Only form encoded payloads are allowed.", status_code=400)
 
-    args = event.json_body
-    if not args:
-        return JSONResponse('Missing application/json Content-Type', status_code=400)
+    try:
+        args = dict(parse_qsl(event.raw_body.decode()))
+    except Exception:
+        return JSONResponse('Invalid Form Data', status_code=400)
 
-    user_id = args.get('user_id')
+    if not args or not args.get('user_id'):
+        return JSONResponse('Missing "user_id" FORM key', status_code=400)
+
+    user_id = args['user_id']
     db = get_database()
     user = db.get_user(user_id)
     if not user:
@@ -77,7 +84,6 @@ def add_user_to_context(event: Request, get_response):
 
     # Attach user to request offset for easier access
     event.user = user
-    event.db = get_database()
 
     return get_response(event)
 
