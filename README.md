@@ -5,6 +5,12 @@
 
 `python3.6+`
 
+For development:
+- Docker
+- Docker-Compose
+- `jq` Command Utility
+
+
 ## Work Items
 - [x] Add Dynamodb persistence
 - [x] Connect to slack. Adapt response to slack.
