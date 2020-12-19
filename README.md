@@ -11,15 +11,15 @@
 - [x] HTTP Middleware that logs and validates slack request signature
 - [x] Implement `/reservar` & `/cancelar` Phase 1
 - [x] Implement `/mis_reservas` and `/list_reservas`
-- [ ] Implement max amount of reservas per day.
+- [x] Implement max amount of reservas per day.
+- [x] Implement docker-compose with local dynamodb
+- [ ] Implement Slack-Container communication for faster development
 - [ ] Implement user crud in a happy way to be flexible to policy changes
-- [ ] Implement Local Development Workflow with ngrok instead of deploying every time
 - [ ] Implement `/reservar` Phase 2 with availability per sections
 
 Low priority
-- [ ] Implement docker-compose with local dynamodb for e2e tests
 - [ ] Reduce lambda role rights to minumum working version
-- [ ] Add tests
+- [x] Add tests
 
 ## Install
 ```

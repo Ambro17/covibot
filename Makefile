@@ -1,3 +1,5 @@
+.PHONY: dynamodb dynamodb-check
+
 auth:
 	aws-google-auth -u ${USER}@onapsis.com -I C019my1yt -S 837142051107 --ask-role --duration 3600 --profile 'default' \
 	--save-failure-html
@@ -56,3 +58,9 @@ run-shell:
 	-p 5000:5000\
 	covibot \
 	/bin/bash
+
+dynamodb:
+	docker run -p 8000:8000 amazon/dynamodb-local
+
+dynamodb-check:
+	aws dynamodb describe-limits --endpoint-url http://localhost:8000

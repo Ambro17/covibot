@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb
+    ports:
+      - "8000:8000"
+  covibot:
+    depends_on:
+      - dynamodb
+    build:
+      context: ./covibot
+      dockerfile: Dockerfile
+    image: covibot
+    container_name: covibot
+    ports:
+     - "5000:5000"
+    environment:
+      AWS_ACCESS_KEY_ID: 'NOTREAL'
+      AWS_SECRET_ACCESS_KEY: 'NOTREAL'
