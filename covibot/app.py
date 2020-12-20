@@ -5,13 +5,18 @@ from slack_sdk import WebClient as Slack
 
 from chalicelib.bus import SQSBus
 from chalicelib.config import config, Config
+from chalicelib.db import get_database
 from chalicelib.middlewares import (
     validate_request_comes_from_slack,
     log_all_traffic,
     add_user_to_context,
 )
-from chalicelib.db import get_database
-from chalicelib.reservas.api import reservar_semana, cancelar_reserva_semana, listar_reservas, listar_mis_reservas
+from chalicelib.reservas.api import (
+    reservar_semana,
+    cancelar_reserva_semana,
+    listar_reservas,
+    listar_mis_reservas,
+)
 
 
 def init_app(config: Config, db=None):
@@ -33,6 +38,7 @@ def init_app(config: Config, db=None):
 
 app = init_app(config)
 
+
 JSONResponse = partial(Response, headers={'Content-Type': 'application/json'})
 Ok = partial(JSONResponse, status_code=200)
 
@@ -53,8 +59,8 @@ def home():
 @slack_command("/reservar")
 def reservar_handler():
     user = app.current_request.user
-    app.log.info(f"Realizando la reserva para {user}")
 
+    app.log.info(f"Realizando la reserva para {user}")
     reserva = reservar_semana(app.db, user)
     if reserva.ok:
         return Ok(reserva.data)
@@ -65,8 +71,8 @@ def reservar_handler():
 @slack_command("/cancelar_reserva")
 def cancelar_reserva_handler():
     user = app.current_request.user
-    app.log.info(f"Cancelando la reserva de {user}")
 
+    app.log.info(f"Cancelando las reservas de {user}")
     reserva = cancelar_reserva_semana(app.db, user)
     if reserva.ok:
         return Ok(reserva.data)
