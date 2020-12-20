@@ -97,6 +97,14 @@ Tasks logs
 chalice logs -n start_callback # or the task name function
 ```
 
+## Local Development
+```
+docker-compose up
+```
+Then copy the ngrok public url and start playing with that.
+
+
+
 ## Troubleshooting
 If ngrok fails to start when you run `docker-compose up`, it may be a docker dns problem.
 To solve it edit your `/etc/docker/daemon.json` and put google dns as the first server.
