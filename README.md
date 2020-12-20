@@ -9,6 +9,7 @@ For development:
 - Docker
 - Docker-Compose
 - `jq` Command Utility
+- `direnv` to load env vars based on current dir
 
 
 ## Work Items
@@ -88,26 +89,65 @@ environment variables when you enter the project. This effectively drops the nec
 
 
 ## View logs
+
 Api Handler logs
+
 ```
 chalice logs
 ```
+
 Tasks logs
+
 ```
 chalice logs -n start_callback # or the task name function
 ```
 
 ## Local Development
+
+Install `direnv` and create an .envrc on project root with the following content
+
+```
+dotenv
+```
+
+This loads secrets from an `.env` file on the same dir. Go ahead and create it with the real secrets:
+
+```
+SLACK_BOT_TOKEN=xoxb-...
+SLACK_SIGNING_SECRET=73...
+SQS_URL=https://sqs.
+SQS_QUEUE_NAME=testkiu
+PYTHONPATH=covibot
+TESTING=1
+DB_URL=localhost:8000
+```
+
+Then run
+
 ```
 docker-compose up
 ```
-Then copy the ngrok public url and start playing with that.
 
-
+And search the logs for ngrok's public url to start playing with it. Covibot source folder is mounted on the app
+container so changes should be reflected without needing to restart the containers.
 
 ## Troubleshooting
-If ngrok fails to start when you run `docker-compose up`, it may be a docker dns problem.
-To solve it edit your `/etc/docker/daemon.json` and put google dns as the first server.
+
+If ngrok fails to start when you run `docker-compose up`, it may be a docker dns problem. To solve it edit
+your `/etc/docker/daemon.json` and put google dns as the first server.
+
 ```
 {"dns": ["8.8.8.8", ...]}  # Any other dns server you may have must go after google's
+```
+
+## Testing
+
+You can use docker-compose to run tests in an isolated manner, with automatic service management _or_ manually starting
+dynamodb container and then running tests. I recommend the first one:
+```docker-compose run --rm covibot pytest```
+For the second one:
+
+```
+docker-compose up dynamodb
+pytest
 ```
