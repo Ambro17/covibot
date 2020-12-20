@@ -13,6 +13,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "~/.aws/:/root/.aws/:ro"
+      - "./covibot/:/app/"
     image: covibot
     container_name: covibot
     ports:
