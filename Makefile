@@ -53,7 +53,7 @@ run: build
 run-shell:
 	docker run \
 	-it \
-	--volume ~/.aws/credentials:/home/root/.aws/credentials \
+	--volume ~/.aws/credentials:/root/.aws/credentials \
 	--rm \
 	-p 5000:5000\
 	covibot \
@@ -64,3 +64,9 @@ dynamodb:
 
 dynamodb-check:
 	aws dynamodb describe-limits --endpoint-url http://localhost:8000
+
+dev:
+	bash start_dev.sh
+
+logs:
+	dc logs -f
