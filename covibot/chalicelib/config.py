@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -11,6 +12,7 @@ class Config:
     testing: bool
     production: bool
     log_level: str
+    db_url: Optional[str] = None
 
 
 config = Config(
@@ -21,4 +23,5 @@ config = Config(
     testing=os.getenv('TESTING', False),
     production=os.getenv('PRODUCTION', False),
     log_level=os.getenv('LOG_LEVEL', 'DEBUG'),
+    db_url=os.getenv('DB_URL', None),
 )

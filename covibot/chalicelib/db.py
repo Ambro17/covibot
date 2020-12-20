@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
@@ -6,7 +7,7 @@ from typing import List, Optional
 import boto3
 import botocore
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', endpoint_url=os.getenv('DB_URL'))
 
 
 def create_table(tablename):
@@ -48,6 +49,11 @@ def create_table(tablename):
     table.meta.client.get_waiter('table_exists').wait(TableName=tablename)
     print(table.item_count)
     return table
+
+
+def create_user(user_id, group, name, **kwargs):
+    user = {'user_id': str(user_id), 'group': int(group), 'name': str(name), **kwargs}
+    return dynamodb.Table('users').put_item(Item=user)
 
 
 @dataclass
@@ -206,6 +212,7 @@ class DynamoDBPersistence(Repository):
 
         return len(date_reservas.get('reservas', [])) <= self.MAX_RESERVAS_PER_DAY
 
+
 class MemoryPersistence(Repository):
     """Interface used for testing"""
 
@@ -232,11 +239,9 @@ class MemoryPersistence(Repository):
 
         return SolicitudReserva(True, 'Testing OK')
 
-
     def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
         self.reservas = [r for r in self.reservas if r.dia not in dates]
         return SolicitudCancelacion(True, 'MOCKED')
-
 
     def list_reservas(self) -> List[Reserva]:
         return self.reservas
@@ -244,5 +249,6 @@ class MemoryPersistence(Repository):
     def mis_reservas(self, username: str) -> List[Reserva]:
         return [x for x in self.reservas if x.name == username]
 
-def get_database():
-    return DynamoDBPersistence(client=boto3.resource('dynamodb'))
+
+def get_database(db_url=None):
+    return DynamoDBPersistence(client=boto3.resource('dynamodb', endpoint_url=db_url))
