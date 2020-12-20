@@ -29,7 +29,7 @@ Low priority
 
 - [x] Reduce lambda role rights to minumum working version (Already minimum)
 - [x] Add tests
-- []  Add db-shell target to crud users and reservas
+- [ ]  Add db-shell target to crud users and reservas
 
 ## Install
 ```

@@ -54,15 +54,6 @@ run-shell:
 dynamodb:
 	docker run -p 8000:8000 amazon/dynamodb-local
 
-dynamodb-check:
-	aws dynamodb describe-limits --endpoint-url http://localhost:8000
-
-dev:
-	bash start_dev.sh
-
-logs:
-	dc logs -f
-
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +

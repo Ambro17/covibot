@@ -12,8 +12,8 @@ services:
     depends_on:
       - dynamodb
     build:
-      context: ./covibot
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./covibot/Dockerfile
     volumes:
       - "~/.aws/:/root/.aws/:ro"
       - "./covibot/:/app/"
