@@ -70,7 +70,7 @@ def add_user_to_context(event: Request, get_response):
         return JSONResponse('Missing "user_id" FORM key', status_code=400)
 
     user_id = args['user_id']
-    db = get_database(config.db_url)
+    db = get_database()
     user = db.get_user(user_id)
     if not user:
         # Slack only return responses with status 200.

@@ -6,7 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import List
 
-from chalicelib.db import get_database, User, Reserva
+from chalicelib.db import get_database, User
 
 db = get_database()
 
@@ -96,7 +96,7 @@ def format_reservas(reservas_by_date):
 
     return monospace(
         '\n'.join(
-            f"{date}\n\t{', '.join(names)}"
+            f"{date}\n    {', '.join(names)}"
             for date, names in reservas_by_date.items()
         )
     )

@@ -7,6 +7,8 @@ from typing import List, Optional
 import boto3
 import botocore
 
+from chalicelib.config import config
+
 dynamodb = boto3.resource('dynamodb', endpoint_url=os.getenv('DB_URL'))
 
 
@@ -250,5 +252,9 @@ class MemoryPersistence(Repository):
         return [x for x in self.reservas if x.name == username]
 
 
-def get_database(db_url=None):
-    return DynamoDBPersistence(client=boto3.resource('dynamodb', endpoint_url=db_url))
+def get_client():
+    return boto3.resource('dynamodb', endpoint_url=config.db_url)
+
+
+def get_database():
+    return DynamoDBPersistence(client=get_client())

@@ -29,7 +29,7 @@ def init_app(config: Config):
         app.register_middleware(validate_request_comes_from_slack, 'http')
         app.register_middleware(log_all_traffic, 'all')
 
-    app.db = get_database(config.db_url)
+    app.db = get_database()
     app.bus = SQSBus(queue=config.sqs_url, name=config.sqs_queue_name)
     app.slack = Slack(token=config.slack_bot_token)
 
