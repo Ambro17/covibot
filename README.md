@@ -20,12 +20,14 @@ For development:
 - [x] Implement `/mis_reservas` and `/list_reservas`
 - [x] Implement max amount of reservas per day.
 - [x] Implement docker-compose with local dynamodb
-- [ ] Implement Slack to Container communication for faster development
-- [ ] Implement user crud in a happy way to be flexible to policy changes
+- [x] Implement Slack to Container communication for faster development (powered by ngrok)
+- [x] Implement user crud in a happy way to be flexible to policy changes (populate py script)
+- [ ] Deploy to slack
 - [ ] Implement `/reservar` Phase 2 with availability per sections
 
 Low priority
-- [ ] Reduce lambda role rights to minumum working version
+
+- [x] Reduce lambda role rights to minumum working version (Already minimum)
 - [x] Add tests
 
 ## Install
