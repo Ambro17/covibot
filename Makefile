@@ -7,14 +7,6 @@ auth:
 authcheck:
 	aws sts get-caller-identity
 
-install:
-	pip install -r requirements.txt
-
-local:
-	cd covibot && \
-	chalice local && \
-	cd -
-
 do:
 	cd covibot && \
 	# Replace secrets to deploy them in aws ready to be used \
