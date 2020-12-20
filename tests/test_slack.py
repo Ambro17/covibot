@@ -1,10 +1,8 @@
-from functools import partial
-
+import pytest
 from chalice.test import Client
 
 from chalicelib.db import MemoryPersistence, User
 from covibot.app import app
-import pytest
 
 
 @pytest.fixture
@@ -16,9 +14,6 @@ def client():
         yield client
 
 
-post_form = partial(client.http.post, headers={'content-type': 'application/x-www-form-urlencoded'})
-
-
 def test_only_form_encoded_posts_are_allowed(client):
     response = client.http.post('/reservar')
     assert response.body == b'Only form encoded payloads are allowed.'
@@ -27,7 +22,8 @@ def test_only_form_encoded_posts_are_allowed(client):
 
 
 def test_commands_accept_form_requests(client):
-    response = post_form('/reservar', body='user_id=99&b=2')
+    response = client.http.post('/reservar', body='user_id=99&b=2',
+                                headers={'content-type': 'application/x-www-form-urlencoded'})
     assert response.body == b"Unable to find user with id `'99'`"
 
 
@@ -36,5 +32,6 @@ def test_commands_accept_form_requests_full(client):
     db = MemoryPersistence(users={'1': auser})
 
     client._app.db = db
-    response = post_form('/reservar', body='user_id=1')
+    response = client.http.post('/reservar', body='user_id=1',
+                                headers={'content-type': 'application/x-www-form-urlencoded'})
     assert b'Reserva Realizada' in response.body

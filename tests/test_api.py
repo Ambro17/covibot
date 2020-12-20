@@ -9,8 +9,7 @@ from chalicelib.reservas.api import (
     reservar_semana,
     SolicitudReservaSemanal,
     cancelar_reserva_semana,
-    CancelacionReservaSemanal, listar_reservas,
-)
+    CancelacionReservaSemanal, )
 
 
 @freeze_time('2020-01-11')
@@ -66,7 +65,7 @@ def test_list_reservas():
         ok=True,
         data="✔️ Reserva Realizada para los días:\n `['2020-02-18', '2020-02-19']`",
     )
-    assert listar_reservas(testing_db) == [
+    assert testing_db.list_reservas() == [
         Reserva(name='Someone', dia='2020-02-20'),
         Reserva(name='Someone', dia='2020-02-21'),
         Reserva(name='Golliat', dia='2020-02-18'),
@@ -86,7 +85,7 @@ def test_reserve_twice_on_different_days():
             ok=True,
             data="✔️ Reserva Realizada para los días:\n `['2020-02-18', '2020-02-19']`",
         )
-        assert listar_reservas(db) == [
+        assert db.list_reservas() == [
             Reserva('Golliat', '2020-02-18'),
             Reserva('Golliat', '2020-02-19'),
         ]
@@ -97,7 +96,7 @@ def test_reserve_twice_on_different_days():
             data="✔️ Reserva Realizada para los días:\n `['2020-02-24', '2020-02-25', '2020-02-26']`",
         )
 
-    assert listar_reservas(db) == [
+    assert db.list_reservas() == [
         Reserva('Golliat', '2020-02-18'),
         Reserva('Golliat', '2020-02-19'),
         Reserva('Golliat', '2020-02-24'),
@@ -119,12 +118,12 @@ def test_cancelacion_removes_reserva():
         ok=True,
         data="✔️ Reserva Realizada para los días:\n `['2020-12-17', '2020-12-18']`",
     )
-    assert len(listar_reservas(db)) == 2
+    assert len(db.list_reservas()) == 2
     assert cancelar_reserva_semana(db, auser) == CancelacionReservaSemanal(
         ok=True,
         data='✔️ Reserva Cancelada',
     )
-    assert len(listar_reservas(db)) == 0
+    assert len(db.list_reservas()) == 0
 
 
 def test_reservar_doesnt_reserve_more_than_once():
