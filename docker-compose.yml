@@ -11,13 +11,12 @@ services:
     build:
       context: ./covibot
       dockerfile: Dockerfile
+    volumes:
+      - "~/.aws/:/root/.aws/:ro"
     image: covibot
     container_name: covibot
     ports:
      - "0.0.0.0:5000:5000"
-    environment:
-      AWS_ACCESS_KEY_ID: 'NOTREAL'
-      AWS_SECRET_ACCESS_KEY: 'NOTREAL'
   ngrok:
     image: wernight/ngrok
     container_name: ngrok
