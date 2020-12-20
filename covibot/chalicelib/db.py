@@ -119,9 +119,7 @@ class DynamoDBPersistence(Repository):
 
         return User(user['user_id'], user.get('group', 1), user.get('name', 'Unknown'))
 
-
     def reservar_dia(self, username: str, date: str) -> SolicitudReserva:
-        breakpoint()
         if not date:
             return SolicitudReserva(otorgada=False, mensaje='No se especificó el día a reservar')
 
@@ -160,7 +158,6 @@ class DynamoDBPersistence(Repository):
 
         return SolicitudReserva(True, f'Se reservaron los dias `{dates}` para {username}')
 
-
     def cancelar_reserva_dias(self, username, dates: List[str]) -> SolicitudCancelacion:
         for date in dates:
             resp = self.reservas.update_item(
@@ -171,9 +168,13 @@ class DynamoDBPersistence(Repository):
                 },
                 ReturnValues='ALL_NEW',
             )
-            if not resp.get('Attributes'):
+            if resp['ResponseMetadata']['HTTPStatusCode'] != 200:
                 # Reservas are allowed to be empty after cancellation
-                # But Attributes must be returned if the operation was successfull
+                # But Attributes must be returned if the operation was successful
+                # Well, that's really not true. If there was no reserve for that
+                # Date, then attributes key will not exist. That's why we validate
+                # Only Against the HTTP Status Code
+                # TODO: Perhaps do a query before the update to know if they exist?
                 print(f'[ERROR] {resp!r}')
                 return SolicitudCancelacion(cancelada=False, mensaje='Error cancelando la reserva.')
 
