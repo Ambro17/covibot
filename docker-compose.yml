@@ -1,7 +1,9 @@
 version: '3.7'
 services:
   dynamodb:
-    image: amazon/dynamodb-local
+    build:
+      context: ./dynamodb
+      dockerfile: Dockerfile
     container_name: dynamodb
     ports:
       - "8000:8000"

@@ -69,3 +69,6 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 	find . -name '.pytest_cache' -exec rm -fr {} +
+
+dbping:
+	aws dynamodb list-tables --endpoint-url http://localhost:8000
