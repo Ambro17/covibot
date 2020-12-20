@@ -19,7 +19,7 @@ For development:
 - [x] Implement `/mis_reservas` and `/list_reservas`
 - [x] Implement max amount of reservas per day.
 - [x] Implement docker-compose with local dynamodb
-- [ ] Implement Slack-Container communication for faster development
+- [ ] Implement Slack to Container communication for faster development
 - [ ] Implement user crud in a happy way to be flexible to policy changes
 - [ ] Implement `/reservar` Phase 2 with availability per sections
 
