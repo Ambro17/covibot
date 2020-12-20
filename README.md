@@ -136,12 +136,18 @@ container so changes should be reflected without needing to restart the containe
 
 ## Troubleshooting
 
+### Errors with ngrok
+
 If ngrok fails to start when you run `docker-compose up`, it may be a docker dns problem. To solve it edit
 your `/etc/docker/daemon.json` and put google dns as the first server.
 
 ```
 {"dns": ["8.8.8.8", ...]}  # Any other dns server you may have must go after google's
 ```
+
+### Credentials expired
+
+If credentials expired, run `make auth` to update them
 
 ## Testing
 
