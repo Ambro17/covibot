@@ -6,8 +6,9 @@ from functools import partial
 from urllib.parse import parse_qsl
 
 from chalice.app import Request, Response
-from chalicelib.db import get_database
 
+from chalicelib.config import config
+from chalicelib.db import get_database
 
 JSONResponse = partial(Response, headers={'Content-Type': 'application/json'})
 Ok = partial(JSONResponse, status_code=200)
@@ -16,7 +17,7 @@ Ok = partial(JSONResponse, status_code=200)
 def validate_request_comes_from_slack(event: Request, get_response):
     """To be used only as http middleware, as it expects a Request event"""
 
-    if os.getenv('TESTING'):
+    if config.testing:
         # Do not validate on testing environment
         return get_response(event)
 
@@ -69,7 +70,7 @@ def add_user_to_context(event: Request, get_response):
         return JSONResponse('Missing "user_id" FORM key', status_code=400)
 
     user_id = args['user_id']
-    db = get_database()
+    db = get_database(config.db_url)
     user = db.get_user(user_id)
     if not user:
         # Slack only return responses with status 200.
