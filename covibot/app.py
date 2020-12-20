@@ -40,7 +40,7 @@ Ok = partial(JSONResponse, status_code=200)
 # https://api.slack.com/interactivity/slash-commands#app_command_handling
 slack_command = partial(
     app.route,
-    content_types=['application/x-www-form-urlencoded'],
+    content_types=['application/x-www-form-urlencoded', 'application/x-www-form-urlencoded; charset=utf-8'],
     methods=['POST'],
 )
 
@@ -53,6 +53,8 @@ def home():
 @slack_command("/reservar")
 def reservar_handler():
     user = app.current_request.user
+    app.log.info(f"Realizando la reserva para {user}")
+
     reserva = reservar_semana(app.db, user)
     if reserva.ok:
         return Ok(reserva.data)
@@ -63,6 +65,7 @@ def reservar_handler():
 @slack_command("/cancelar_reserva")
 def cancelar_reserva_handler():
     user = app.current_request.user
+    app.log.info(f"Cancelando la reserva de {user}")
 
     reserva = cancelar_reserva_semana(app.db, user)
     if reserva.ok:
@@ -73,6 +76,7 @@ def cancelar_reserva_handler():
 
 @slack_command("/listar_reservas")
 def listar_reservas_handler():
+    app.log.info("Listando todas las reservas")
     reservas = listar_reservas(app.db)
     return Ok(reservas.data)
 
@@ -80,5 +84,6 @@ def listar_reservas_handler():
 @slack_command("/mis_reservas")
 def mis_reservar_handler():
     user = app.current_request.user
+    app.log.info("Buscando las reservas de %s" % user)
     reservas = listar_mis_reservas(app.db, user.username)
     return Ok(reservas.data)
